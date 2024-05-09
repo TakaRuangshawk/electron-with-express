@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
@@ -6,21 +7,53 @@ import bodyParser from "body-parser";
 import http from "http";
 import createError from "http-errors";
 import { expressPort } from "../package.json";
-
+import fs from "fs";
+import { Request, Response } from 'express';
 const app = express();
 const router = express.Router();
 
+const logDirectory = "D://logs";
+// Function to write log messages to file
+function writeLogToFile(logMessage: string) {
+  const logFilePath = path.join(logDirectory, "app.log");
+  if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory, { recursive: true });
+  }
+  fs.appendFile(logFilePath, `${logMessage}\n`, (err) => {
+    if (err) {
+      console.error("Error writing to log file:", err);
+    }
+  });
+}
 const routes = [
   { path: "/", viewName: "index", title: "Home" },
   { path: "/pageTwo", viewName: "pageTwo", title: "Page 2" },
   { path: "/pageThree", viewName: "pageThree", title: "Page 3" },
-  { path: "/pageFour", viewName: "pageFour", title: "Page 4" }
+  { path: "/pageFour", viewName: "pageFour", title: "Page 4" },
+  { path: "/sendMessage", method: "post", handler: sendMessageHandler }
 ];
 
-routes.forEach(({ path, viewName, title }) => {
-  router.get(path, (_req, res) => res.render(viewName, { title }));
+routes.forEach(({ path, viewName, title, method, handler }) => {
+  if (method === "post") {
+    router.post(path, handler);
+  } else {
+    router.get(path, (_req, res) => {
+      if (viewName && title) {
+        res.render(viewName, { title });
+      } else {
+        // Handle the case when viewName or title is undefined
+        res.status(500).send("Internal Server Error");
+      }
+    });
+  }
 });
-
+function sendMessageHandler(req: Request, res: Response) {
+  const message = req.body.message;
+  const logMessage = `[${new Date().toISOString()}] New message: ${message}`;
+  console.log(logMessage);
+  writeLogToFile(logMessage);
+  res.json({ success: true, message: "Message received and logged" });
+}
 app.set("port", expressPort);
 app.set("views", path.join(__dirname, "..", "views"));
 app.set("view engine", "ejs");
@@ -39,6 +72,7 @@ app.use((err: any, req: any, res: any, _next: any) => {
 
   res.status(err.status || 500).render("error");
 });
+app.use(cors());
 
 const server = http.createServer(app);
 

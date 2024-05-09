@@ -4,10 +4,14 @@ import { spawn } from "child_process";
 import path from "path";
 import fetch from "node-fetch";
 import { name } from "../package.json";
-
+import fs from "fs";
 const appName = app.getPath("exe");
 const expressAppUrl = "http://127.0.0.1:3000";
 let mainWindow: BrowserWindow | null;
+
+// Path to log file
+const logFilePath = path.join(app.getPath("userData"), "app.log");
+
 
 const expressPath = appName.endsWith(`${name}.exe`)
   ? path.join("./resources/app.asar", "./dist/src/express-app.js")
@@ -19,6 +23,22 @@ function stripAnsiColors(text: string): string {
     ""
   );
 }
+
+// Function to write logs to file
+function writeLogToFile(logEntry: string) {
+  if (!fs.existsSync(logFilePath)) {
+    // File does not exist, handle accordingly (e.g., create the file)
+    fs.writeFileSync(logFilePath, "");
+  }
+
+  fs.appendFile(logFilePath, `${logEntry}\n`, (err) => {
+    if (err) {
+      console.error("Error writing to log file:", err);
+    }
+  });
+}
+console.log(logFilePath);
+writeLogToFile("Application started");
 
 function redirectOutput(stream: Readable) {
   stream.on("data", (data: any) => {

@@ -15,6 +15,36 @@
 		<a href="/pageThree">Page Three</a>
 		<br />
 		<a href="/pageFour">Page Four</a>
+		<form id="messageForm">
+			<input type="text" id="messageInput" placeholder="Enter your message">
+			<button type="button" onclick="sendMessage()">Send Message</button>
+		</form>
+	
+	
 	</body>
-
+	<script>
+        function sendMessage() {
+            var messageInput = document.getElementById("messageInput").value;
+			console.log(messageInput);
+            fetch('http://127.0.0.1:3000/sendMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: messageInput })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Message sent:', data);
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            });
+        }
+    </script>
 	</html>
