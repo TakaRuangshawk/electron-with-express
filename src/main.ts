@@ -1,4 +1,4 @@
-import { app, globalShortcut, BrowserWindow, ipcMain } from "electron";
+import { app, globalShortcut, BrowserWindow, ipcMain,screen  } from "electron";
 import { Readable } from "stream";
 import { spawn } from "child_process";
 import path from "path";
@@ -37,7 +37,7 @@ function writeLogToFile(logEntry: string) {
     }
   });
 }
-console.log(logFilePath);
+
 writeLogToFile("Application started");
 
 function redirectOutput(stream: Readable) {
@@ -63,13 +63,18 @@ function unregisterAllShortcuts() {
 
 function createWindow() {
   const expressAppProcess = spawn(appName, [expressPath], { env: { ELECTRON_RUN_AS_NODE: "1" } });
-
+  const { bounds } = screen.getPrimaryDisplay();
   [expressAppProcess.stdout, expressAppProcess.stderr].forEach(redirectOutput);
 
   mainWindow = new BrowserWindow({
     autoHideMenuBar: true,
-    width: 640,
-    height: 480,
+    width: bounds.width,
+    height: bounds.height,
+    x: bounds.x,
+    y: bounds.y,
+    fullscreen: true,
+    frame: false,
+
     icon: path.join(__dirname, "..", "favicon.ico"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
