@@ -17,15 +17,16 @@
 		<a href="/pageFour">Page Four</a>
 		<form id="messageForm">
 			<input type="text" id="messageInput" placeholder="Enter your message">
-			<button type="button" onclick="sendMessage()">Send Message</button>
+            <button type="button" onclick="sendMessage('sendlog : ', document.getElementById('messageInput').value)">Send Message</button>
+
 		</form>
 	
 	
 	</body>
 	<script>
-        function sendMessage() {
-            var messageInput = document.getElementById("messageInput").value;
-			console.log(messageInput);
+        function sendMessage(message) {
+            var messageInput = message;
+            console.log(messageInput);
             fetch('http://127.0.0.1:3000/sendMessage', {
                 method: 'POST',
                 headers: {

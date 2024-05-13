@@ -9,3 +9,11 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 		ipcRenderer.on(channel, listener);
 	}
 });
+
+contextBridge.exposeInMainWorld('electron', {
+	ipcRenderer: ipcRenderer,
+	quitApp: () => {
+	  ipcRenderer.send('quit-app');
+	}
+  });
+  

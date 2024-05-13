@@ -78,10 +78,14 @@
 	<div id="loading">
 		<div class="loader"></div>
 	</div>
+	<!-- Exit button -->
+	<button id="exitBtn" onclick="window.electron.quitApp()">Exit</button>
 	<div id="serverLog"></div>
 	<iframe id="expressApp" class="expressApp" title="Express App" frameborder="0"></iframe>
-
+	 <!-- Exit button -->
+	
 	<script src="./src/app.js"></script>
+	<script src="./src/log.js"></script>
 </body>
 
 </html>

@@ -97,7 +97,10 @@ function createWindow() {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
-
+ipcMain.on('quit-app', () => {
+  // Quit the application
+  app.quit();
+});
 app.whenReady().then(() => {
   registerGlobalShortcuts();
   createWindow();
