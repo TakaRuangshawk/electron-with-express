@@ -17,12 +17,37 @@
 		<a href="/pageFour">Page Four</a>
 		<form id="messageForm">
 			<input type="text" id="messageInput" placeholder="Enter your message">
-            <button type="button" onclick="sendMessage('sendlog : ', document.getElementById('messageInput').value)">Send Message</button>
+            <button type="button" onclick="sendMessage('sendlog : ' + document.getElementById('messageInput').value)">Send Message</button>
 
 		</form>
-	
+        <button class ="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 112px;background-color: white;border: 0;padding: 0;">
+            <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
+        </button>
+        <button class="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 530px;background-color: white;border: 0;padding: 0;">
+            <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
+        </button>
+        <div id="htmlContent"></div>
 	
 	</body>
+    <script>
+    document.getElementById('fetchButton').addEventListener('click', function() {
+      fetch('https://localhost:7071/lpk/api/v1/kiosk/banknote', {
+        method: 'GET',
+        headers: {
+          'Accept': '*/*',
+          'Content-Type': 'application/json',
+          'ApiKey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
+        },
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('htmlContent').innerHTML = data;
+        console.log(data);
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
+    </script>
 	<script>
         function sendMessage(message) {
             var messageInput = message;

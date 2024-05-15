@@ -1,4 +1,4 @@
-import { app, globalShortcut, BrowserWindow, ipcMain,screen  } from "electron";
+import { app, globalShortcut, BrowserWindow, ipcMain,screen,session   } from "electron";
 import { Readable } from "stream";
 import { spawn } from "child_process";
 import path from "path";
@@ -23,7 +23,23 @@ function stripAnsiColors(text: string): string {
     ""
   );
 }
+interface HeadersObject {
+  [key: string]: string[] | string;
+}
 
+function UpsertKeyValue(obj: HeadersObject, keyToChange: string, value: string[] | string): void {
+  const keyToChangeLower = keyToChange.toLowerCase();
+  for (const key of Object.keys(obj)) {
+    if (key.toLowerCase() === keyToChangeLower) {
+      // Reassign old key
+      obj[key] = value;
+      // Done
+      return;
+    }
+  }
+  // Insert at end instead
+  obj[keyToChange] = value;
+}
 // Function to write logs to file
 function writeLogToFile(logEntry: string) {
   if (!fs.existsSync(logFilePath)) {
@@ -77,6 +93,7 @@ function createWindow() {
 
     icon: path.join(__dirname, "..", "favicon.ico"),
     webPreferences: {
+      nodeIntegration: true,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -92,6 +109,31 @@ function createWindow() {
   ipcMain.handle("get-express-app-url", () => expressAppUrl);
 
   mainWindow.loadURL(`file://${__dirname}/../index.html`);
+
+   // Intercept and modify requests to handle CORS
+   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    if (details.url === 'https://localhost:7071/lpk/api/v1/kiosk/banknote') {
+      details.requestHeaders['Origin'] = 'http://127.0.0.1:3000';
+    }
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+  mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
+  (details, callback) => {
+    const requestHeaders = details.requestHeaders as HeadersObject; // Type assertion
+    UpsertKeyValue(requestHeaders, 'Access-Control-Allow-Origin', ['*']);
+    callback({ requestHeaders });
+  },
+);
+
+mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+  const responseHeaders = details.responseHeaders as HeadersObject; // Type assertion
+  UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Origin', ['*']);
+  UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Headers', ['*']);
+  UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Methods', ['GET, OPTIONS, POST, PUT']);
+  callback({
+    responseHeaders,
+  });
+});
 }
 
 app.on("window-all-closed", () => {
