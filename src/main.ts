@@ -112,7 +112,11 @@ function createWindow() {
 
    // Intercept and modify requests to handle CORS
    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    if (details.url === 'https://localhost:7071/lpk/api/v1/kiosk/banknote') {
+    const targetUrls = [
+      'https://localhost:7071/lpk/api/v1/kiosk/banknote',
+      'https://localhost:7071/lpk/api/v1/kiosk/print_total_banknote'
+    ];
+    if (targetUrls.includes(details.url)) {
       details.requestHeaders['Origin'] = 'http://127.0.0.1:3000';
     }
     callback({ cancel: false, requestHeaders: details.requestHeaders });
@@ -127,9 +131,15 @@ function createWindow() {
 
 mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
   const responseHeaders = details.responseHeaders as HeadersObject; // Type assertion
-  UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Origin', ['*']);
-  UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Headers', ['*']);
-  UpsertKeyValue(responseHeaders, 'Access-Control-Allow-Methods', ['GET, OPTIONS, POST, PUT']);
+  if (!responseHeaders['Access-Control-Allow-Origin']) {
+    responseHeaders['Access-Control-Allow-Origin'] = ['*'];
+  }
+  if (!responseHeaders['Access-Control-Allow-Headers']) {
+    responseHeaders['Access-Control-Allow-Headers'] = ['*'];
+  }
+  if (!responseHeaders['Access-Control-Allow-Methods']) {
+    responseHeaders['Access-Control-Allow-Methods'] = ['GET, OPTIONS, POST, PUT'];
+  }
   callback({
     responseHeaders,
   });
