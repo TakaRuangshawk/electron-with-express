@@ -23,22 +23,82 @@
         <button class ="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 112px;background-color: white;border: 0;padding: 0;">
             <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
         </button>
-        <button class="button-19" id="fetchButton2" style="position: absolute; top: 758px;left: 530px;background-color: white;border: 0;padding: 0;">
-            <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
-        </button>
+        
         <div id="htmlContent"></div>
-        <div id="tableContainer"></div>
-
+        
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+        
+          <!-- Modal content -->
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+            <div id="tableContainer"></div>
+            <button class="button-19" id="fetchButton2" style="position: absolute; top: 758px;left: 530px;background-color: white;border: 0;padding: 0;">
+              <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Clear Cassaste" style="width: 100%; height: auto;    border-radius: 30px;">
+          </button>
+          </div>
+        
+        </div>
 	</body>
     <script>
-    document.getElementById('fetchButton').addEventListener('click', function() {
-        // Fetch data from the initial endpoint
-        fetch('https://localhost:5001/lpk/api/v1/kiosk/banknote', {
+      let configData; 
+      async function loadUsage(filename) {
+          try {
+              configData = await loadJsonData(filename);
+              console.log('Config data:', configData);
+              // Use configData here or pass it to other functions
+          } catch (error) {
+              console.error('Error in example usage:', error);
+          }
+      }
+      loadUsage('appsetting');
+
+      // Get the modal
+      var modal = document.getElementById("myModal");
+      var span = document.getElementsByClassName("close")[0];
+      document.getElementById('fetchButton').addEventListener('click', function() {
+        modal.style.display = "block";
+        console.log('Config data2:', configData.env);
+        if (configData.env === 'dev') {
+          // Do hardcode
+          const data = {
+            device_name: configData.devicename,
+            banknote: [
+              { sum: 400, note_name: "20", value: 20, note: 20 },
+              { sum: 1000, note_name: "50", value: 50, note: 20 },
+              { sum: 3000, note_name: "100", value: 100, note: 30 },
+              { sum: 15000, note_name: "500", value: 500, note: 30 },
+              { sum: 30000, note_name: "1000", value: 1000, note: 30 }
+            ]
+          };
+          document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
+          console.log(data);
+          const table = createTable(data);
+          document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
+          document.getElementById('tableContainer').appendChild(table);
+          // Create the payload for the POST request
+          const postData = {
+            device_name: data.device_name,
+            banknote: data.banknote.map(note => ({
+              note_name: note.note_name,
+              value: note.value,
+              note: note.note,
+              sum: note.sum
+            })),
+            total_bank_note: data.banknote.length,
+            total_amount: data.banknote.reduce((total, note) => total + note.value * note.note, 0),
+            update: new Date().toISOString()
+          };
+          console.log(postData);
+        } else {
+        // Do fetch
+        fetch('http://localhost:5137/lpk/api/v1/kiosk/banknote', {
           method: 'GET',
           headers: {
             'Accept': '*/*',
             'Content-Type': 'application/json',
-            'ApiKey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
+            'apikey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
           },
         })
           .then(response => response.json()) // Convert response to JSON
@@ -62,13 +122,12 @@
               update: new Date().toISOString()
             };
             console.log(postData);
-            // Send the POST request
-            fetch('https://localhost:5001/lpk/api/v1/kiosk/print_total_banknote', {
+            fetch('http://localhost:5137/lpk/api/v1/kiosk/print_total_banknote', {
               method: 'POST',
               headers: {
                 'Accept': '*/*',
                 'Content-Type': 'application/json',
-                'ApiKey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
+                'apikey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
               },
               body: JSON.stringify(postData)
             })
@@ -81,41 +140,51 @@
             .catch(error => console.error('Error:', error));
           })
           .catch(error => console.error('Error:', error));
-    });
+        }
+        
+      });
     document.getElementById('fetchButton2').addEventListener('click', function() {
-        fetch('https://localhost:5001/lpk/api/v1/kiosk/set_banknote', {
+      if (configData.env === 'dev') {
+        recreateTable();
+        alert('Success');
+      }
+      else{
+        fetch('http://localhost:5137/lpk/api/v1/kiosk/set_banknote', {
           method: 'POST',
           headers: {
             'Accept': '*/*',
             'Content-Type': 'application/json',
-            'ApiKey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
+            'apikey': '11d976dd-32b4-4449-b4a1-ed27a01014f2'
           },
           body: JSON.stringify({
-            "device_name": "YourDeviceName",
+            "device_name": configData.devicename,
             "banknote": [
-              { "note_name": "20", "value": 0, "note": 0 },
-              { "note_name": "50", "value": 0, "note": 0 },
-              { "note_name": "100", "value": 0, "note": 0 },
-              { "note_name": "500", "value": 0, "note": 0 },
-              { "note_name": "1000", "value": 0, "note": 0 }
+              { "note_name": "20", "value": 20, "note": 0 },
+              { "note_name": "50", "value": 50, "note": 0 },
+              { "note_name": "100", "value": 100, "note": 0 },
+              { "note_name": "500", "value": 500, "note": 0 },
+              { "note_name": "1000", "value": 1000, "note": 0 }
             ]
           })
         })
         .then(response => response.json())
         .then(data => {
-          const table = createTable(data);
-          document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
-          document.getElementById('tableContainer').appendChild(table);
+          document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
           console.log('Success:', data);
+          recreateTable();
+          alert('Success');
         })
         .catch(error => {
+          alert('Something Went Wrong');
           console.error('Error:', error);
         });
+      }
+        
 
     });
     </script>
 	<script>
-    function createTable(data) {
+   function createTable(data) {
       const table = document.createElement('table');
       const headerRow = table.insertRow();
 
@@ -124,8 +193,9 @@
       const headerNames = {
         note_name: 'Banknotes',
         note: 'PCS.',
-        sum: 'Amount  '
+        sum: 'Amounts'
       };
+    
       // Create header cells in the defined order
       headerOrder.forEach(key => {
         const headerCell = document.createElement('th');
@@ -133,38 +203,122 @@
         headerRow.appendChild(headerCell);
       });
     
-       // Create data rows
+      // Initialize total variables
+      let totalPCS = 0;
+      let totalAmounts = 0;
+    
+      // Create data rows and calculate totals
       data.banknote.forEach(note => {
         const row = table.insertRow();
         headerOrder.forEach(key => {
           const cell = row.insertCell();
-          cell.textContent = key === 'sum' ? (note.value * note.note) : note[key];
+          if (key === 'sum') {
+            // Calculate the sum as value * note
+            const sum = parseInt(note.value) * parseInt(note.note);
+            cell.textContent = sum.toLocaleString();
+            totalAmounts += sum;
+          } else if (key === 'note') {
+            // Parse the note as an integer
+            const pcs = parseInt(note.note);
+            cell.textContent = pcs.toLocaleString();
+            totalPCS += pcs;
+          } else {
+            // Directly use the note_name
+            cell.textContent = note[key];
+          }
         });
-      });    
+      });
+    
+      // Add total row
+      const totalRow = table.insertRow();
+      const totalBanknoteCell = totalRow.insertCell();
+      totalBanknoteCell.textContent = 'Total:';
+      totalBanknoteCell.colSpan = 1;
+      const totalPCSCell = totalRow.insertCell();
+      totalPCSCell.textContent = totalPCS.toLocaleString();
+      const totalAmountsCell = totalRow.insertCell();
+      totalAmountsCell.textContent = totalAmounts.toLocaleString();
+    
       return table;
     }
-        function sendMessage(message) {
-            var messageInput = message;
-            console.log(messageInput);
-            fetch('http://127.0.0.1:3000/sendMessage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: messageInput })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+
+
+
+        
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    // Function to delete inner table and recreate it
+    function recreateTable() {
+        // Get the container div
+        const tableContainer = document.getElementById('tableContainer');
+        
+        // Delete the inner HTML of the container
+        tableContainer.innerHTML = '';
+        
+        // Create new table elements
+        const table = document.createElement('table');
+        const tbody = document.createElement('tbody');
+    
+        // Define the table data
+        const tableData = [
+            { banknote: "Banknotes", pcs: "PCS.", amount: "Amounts" },
+            { banknote: 20, pcs: 0, amount: 0 },
+            { banknote: 50, pcs: 0, amount: 0 },
+            { banknote: 100, pcs: 0, amount: 0 },
+            { banknote: 500, pcs: 0, amount: 0 },
+            { banknote: 1000, pcs: 0, amount: 0 },
+            { banknote: "Total:", pcs: 0, amount: 0, colspan: 1 }
+        ];
+    
+        // Loop through the data and create rows and cells
+        tableData.forEach((row, index) => {
+            const tr = document.createElement('tr');
+        
+            if (index === 0) {
+                // Create header row
+                const th1 = document.createElement('th');
+                const th2 = document.createElement('th');
+                const th3 = document.createElement('th');
+                th1.textContent = row.banknote;
+                th2.textContent = row.pcs;
+                th3.textContent = row.amount;
+                tr.appendChild(th1);
+                tr.appendChild(th2);
+                tr.appendChild(th3);
+            } else {
+                // Create data rows
+                const td1 = document.createElement('td');
+                const td2 = document.createElement('td');
+                const td3 = document.createElement('td');
+                td1.textContent = row.banknote;
+                td2.textContent = row.pcs;
+                td3.textContent = row.amount;
+            
+                if (row.colspan) {
+                    td1.colSpan = row.colspan;
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Message sent:', data);
-            })
-            .catch(error => {
-                console.error('Error sending message:', error);
-            });
-        }
+              
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+            }
+          
+            tbody.appendChild(tr);
+        });
+      
+        // Append tbody to table
+        table.appendChild(tbody);
+      
+        // Append table to the container
+        tableContainer.appendChild(table);
+    }
     </script>
 	</html>

@@ -90,10 +90,11 @@ function createWindow() {
     y: bounds.y,
     fullscreen: true,
     frame: false,
-
+    
     icon: path.join(__dirname, "..", "favicon.ico"),
     webPreferences: {
       nodeIntegration: true,
+      webSecurity: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -147,6 +148,7 @@ mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) 
 }
 
 app.on("window-all-closed", () => {
+
   if (process.platform !== "darwin") app.quit();
 });
 ipcMain.on('quit-app', () => {
@@ -158,6 +160,7 @@ app.whenReady().then(() => {
   createWindow();
 
   app.on("activate", () => {
+    app.commandLine.appendSwitch('disable-web-security');
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 

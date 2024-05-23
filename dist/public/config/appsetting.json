@@ -1,0 +1,5 @@
+{
+    "env": "dev",
+    "devicename":"T001B001",
+    "comment": "env has 2 keys,1.dev and 2.prod"
+}

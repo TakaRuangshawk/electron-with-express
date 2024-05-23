@@ -49,11 +49,6 @@ a {
   user-select: auto;
 }
 
-.button-19:hover:not(:disabled) {
-  /* filter: brightness(1.1);
-  -webkit-filter: brightness(1.1); */
-}
-
 .button-19:disabled {
   cursor: auto;
 }
@@ -64,3 +59,48 @@ a {
   filter: brightness(0.85); /* Adjust brightness as desired */
   -webkit-filter: brightness(0.85);
 }
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.4);
+  -webkit-animation-name: fadeIn;
+  -webkit-animation-duration: 1.0s;
+  animation-name: fadeIn;
+  animation-duration: 1.0s
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  height: 850px;
+}
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
