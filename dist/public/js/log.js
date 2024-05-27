@@ -21,3 +21,10 @@ function sendMessage(message) {
         console.error('Error sending message:', error);
     });
 }
+function dataToString(data) {
+    let result = `Device Name: ${data.device_name}`;
+    data.banknote.forEach(b => {
+      result += `\n  -  Note Name: ${b.note_name}, Value: ${b.value}, Note: ${b.note}, Sum: ${b.sum}`;
+    });
+    return result;
+  }

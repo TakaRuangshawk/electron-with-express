@@ -5,9 +5,11 @@
     "main": "./dist/src/main.js",
     "icon": "./dist/favicon.ico",
     "expressPort": 3000,
+    "logDrive": "D",
     "basePath": "./dist",
     "authors": [
-        "Frank Hale <frankhale@gmail.com>"
+        "Frank Hale <frankhale@gmail.com>",
+        "Taka Ruangs <takaruangs@outlook.com>"
     ],
     "license": "MIT",
     "private": true,

@@ -7,21 +7,24 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import http from "http";
 import createError from "http-errors";
-import { expressPort } from "../package.json";
+import { expressPort,logDrive } from "../package.json";
 import fs from "fs";
 import { Request, Response } from 'express';
 
 const app = express();
 const router = express.Router();
 
-const logDirectory = "D://logs";
+const logDirectory = logDrive +"://logs";
 
-// Function to write log messages to file
 function writeLogToFile(logMessage: string) {
-  const logFilePath = path.join(logDirectory, "app.log");
+  const currentDate = new Date();
+  const dateString = currentDate.toISOString().slice(0,10).replace(/-/g,"");
+  const logFilePath = path.join(logDirectory, `MTLog_${dateString}.log`);
+
   if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, { recursive: true });
   }
+
   fs.appendFile(logFilePath, `${logMessage}\n`, (err) => {
     if (err) {
       console.error("Error writing to log file:", err);
@@ -50,10 +53,25 @@ routes.forEach(({ path, viewName, title, method, handler }) => {
     });
   }
 });
+function formatDate(date: Date): string {
+  const pad = (num: number, size: number): string => {
+    let s = "000" + num;
+    return s.substr(s.length - size);
+  };
 
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1, 2); // Months are zero-based
+  const day = pad(date.getDate(), 2);
+  const hours = pad(date.getHours(), 2);
+  const minutes = pad(date.getMinutes(), 2);
+  const seconds = pad(date.getSeconds(), 2);
+  const milliseconds = pad(date.getMilliseconds(), 3);
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}:${milliseconds}`;
+}
 function sendMessageHandler(req: Request, res: Response) {
   const message = req.body.message;
-  const logMessage = `[${new Date().toISOString()}] New message: ${message}`;
+  const logMessage = `[${formatDate(new Date())}] ${message}`;
   console.log(logMessage);
   writeLogToFile(logMessage);
   res.json({ success: true, message: "Message received and logged" });

@@ -3,7 +3,7 @@
 	<html lang="en">
 
 	<body>
-		<h1>
+		<!-- <h1>
 			<%= title %>
 		</h1>
 		<p>Welcome to <%= title %>
@@ -14,12 +14,12 @@
 		<br />
 		<a href="/pageThree">Page Three</a>
 		<br />
-		<a href="/pageFour">Page Four</a>
-		<form id="messageForm">
+		<a href="/pageFour">Page Four</a> -->
+		<!-- <form id="messageForm">
 			<input type="text" id="messageInput" placeholder="Enter your message">
             <button type="button" onclick="sendMessage('sendlog : ' + document.getElementById('messageInput').value)">Send Message</button>
 
-		</form>
+		</form> -->
         <button class ="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 112px;background-color: white;border: 0;padding: 0;">
             <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
         </button>
@@ -32,9 +32,18 @@
           <!-- Modal content -->
           <div class="modal-content">
             <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+            <div class="" id="statusPicture">
+               <img  src="./pic/home_ok.png" style="height: 150px;" /> 
+            </div>
+            <p id="statusMessage"></p>
+            <div class="" id="terminalCDM">
+              <img  src="./pic/icon_cdm.png" style="height: 650px;" /> 
+           </div>
+           <div class="fade-in-out" id="statusPrint">
+            <img  src="./pic/icon_print.png" style="height: 150px;" /> 
+         </div>
             <div id="tableContainer"></div>
-            <button class="button-19" id="fetchButton2" style="position: absolute; top: 758px;left: 530px;background-color: white;border: 0;padding: 0;">
+            <button class="button-19" id="fetchButton2" style="position: relative;left: 1090px; top: 200px;background-color: white;border: 0;padding: 0;">
               <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Clear Cassaste" style="width: 100%; height: auto;    border-radius: 30px;">
           </button>
           </div>
@@ -43,6 +52,9 @@
 	</body>
     <script>
       let configData; 
+      const pElement = document.getElementById('statusMessage');
+      let dataString = '';
+      sendMessage('[Client] : App Start');
       async function loadUsage(filename) {
           try {
               configData = await loadJsonData(filename);
@@ -72,12 +84,12 @@
               { sum: 30000, note_name: "1000", value: 1000, note: 30 }
             ]
           };
-          document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
-          console.log(data);
+          
           const table = createTable(data);
           document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
           document.getElementById('tableContainer').appendChild(table);
-          // Create the payload for the POST request
+          dataString = dataToString(data);
+          sendMessage('[GetBankNote Request] : ' + dataString);
           const postData = {
             device_name: data.device_name,
             banknote: data.banknote.map(note => ({
@@ -90,10 +102,10 @@
             total_amount: data.banknote.reduce((total, note) => total + note.value * note.note, 0),
             update: new Date().toISOString()
           };
-          console.log(postData);
+          sendMessage('[Print Request] : Complete');
         } else {
         // Do fetch
-        fetch('http://localhost:5137/lpk/api/v1/kiosk/banknote', {
+        fetch('http://localhost:5001/lpk/api/v1/kiosk/banknote', {
           method: 'GET',
           headers: {
             'Accept': '*/*',
@@ -103,8 +115,10 @@
         })
           .then(response => response.json()) // Convert response to JSON
           .then(data => {
-            document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
+            // document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
             console.log(data);
+            dataString = dataToString(data);
+            sendMessage('[GetBankNote Request] : ' + dataString);
             const table = createTable(data);
             document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
             document.getElementById('tableContainer').appendChild(table);
@@ -122,7 +136,7 @@
               update: new Date().toISOString()
             };
             console.log(postData);
-            fetch('http://localhost:5137/lpk/api/v1/kiosk/print_total_banknote', {
+            fetch('http://localhost:5001/lpk/api/v1/kiosk/print_total_banknote', {
               method: 'POST',
               headers: {
                 'Accept': '*/*',
@@ -134,8 +148,8 @@
             .then(response => response.json())
             .then(result => {
               console.log('Success:', result);
-             
-              document.getElementById('htmlContent').innerHTML = JSON.stringify(result, null, 2);
+              sendMessage('[Print Request] : Complete')
+              // document.getElementById('htmlContent').innerHTML = JSON.stringify(result, null, 2);
             })
             .catch(error => console.error('Error:', error));
           })
@@ -146,10 +160,10 @@
     document.getElementById('fetchButton2').addEventListener('click', function() {
       if (configData.env === 'dev') {
         recreateTable();
-        alert('Success');
+        sendMessage('[Replenish Request] : Complete');
       }
       else{
-        fetch('http://localhost:5137/lpk/api/v1/kiosk/set_banknote', {
+        fetch('http://localhost:5001/lpk/api/v1/kiosk/set_banknote', {
           method: 'POST',
           headers: {
             'Accept': '*/*',
@@ -169,13 +183,15 @@
         })
         .then(response => response.json())
         .then(data => {
-          document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
+          // document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
           console.log('Success:', data);
+          
+          sendMessage('[Replenish Request] : Complete');
           recreateTable();
-          alert('Success');
         })
         .catch(error => {
           alert('Something Went Wrong');
+          sendMessage('[Replenish Request] : Incomplete');
           console.error('Error:', error);
         });
       }
@@ -185,6 +201,7 @@
     </script>
 	<script>
    function createTable(data) {
+    pElement.textContent = '';
       const table = document.createElement('table');
       const headerRow = table.insertRow();
 
@@ -206,7 +223,7 @@
       // Initialize total variables
       let totalPCS = 0;
       let totalAmounts = 0;
-    
+      
       // Create data rows and calculate totals
       data.banknote.forEach(note => {
         const row = table.insertRow();
@@ -222,17 +239,23 @@
             const pcs = parseInt(note.note);
             cell.textContent = pcs.toLocaleString();
             totalPCS += pcs;
+          }
+          
+          else if (key === 'note_name') {
+            // Format the note_name with commas and add the '฿' symbol
+            const formattedNoteName = parseInt(note[key]).toLocaleString() + '฿';
+            cell.textContent = formattedNoteName;
           } else {
-            // Directly use the note_name
             cell.textContent = note[key];
           }
         });
+      pElement.textContent = 'Print Successful';
       });
     
       // Add total row
       const totalRow = table.insertRow();
       const totalBanknoteCell = totalRow.insertCell();
-      totalBanknoteCell.textContent = 'Total:';
+      totalBanknoteCell.textContent = 'Total';
       totalBanknoteCell.colSpan = 1;
       const totalPCSCell = totalRow.insertCell();
       totalPCSCell.textContent = totalPCS.toLocaleString();
@@ -257,6 +280,7 @@
     }
     // Function to delete inner table and recreate it
     function recreateTable() {
+        pElement.textContent = '';
         // Get the container div
         const tableContainer = document.getElementById('tableContainer');
         
@@ -270,12 +294,12 @@
         // Define the table data
         const tableData = [
             { banknote: "Banknotes", pcs: "PCS.", amount: "Amounts" },
-            { banknote: 20, pcs: 0, amount: 0 },
-            { banknote: 50, pcs: 0, amount: 0 },
-            { banknote: 100, pcs: 0, amount: 0 },
-            { banknote: 500, pcs: 0, amount: 0 },
-            { banknote: 1000, pcs: 0, amount: 0 },
-            { banknote: "Total:", pcs: 0, amount: 0, colspan: 1 }
+            { banknote: '20฿', pcs: 0, amount: 0 },
+            { banknote: '50฿', pcs: 0, amount: 0 },
+            { banknote: '100฿', pcs: 0, amount: 0 },
+            { banknote: '500฿', pcs: 0, amount: 0 },
+            { banknote: '1,000฿', pcs: 0, amount: 0 },
+            { banknote: "Total", pcs: 0, amount: 0, colspan: 1 }
         ];
     
         // Loop through the data and create rows and cells
@@ -319,6 +343,7 @@
       
         // Append table to the container
         tableContainer.appendChild(table);
+        pElement.textContent = 'Replenish Complete';
     }
     </script>
 	</html>
