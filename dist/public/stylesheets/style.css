@@ -146,8 +146,8 @@ table tr{
 }
 #statusPicture{
   position: absolute;
-  top: 140px;
-  left: 1050px;
+  top: 159px;
+  left: 1110px;
 }
 #terminalCDM{
   position: absolute;
@@ -166,12 +166,12 @@ table tr{
 
 @keyframes fadeInOut {
   0% {
-      opacity: 0;
+      opacity: 0.3;
   }
   50% {
-      opacity: 1;
+      opacity: 1.0;
   }
   100% {
-      opacity: 0;
+      opacity: 0.3;
   }
 }

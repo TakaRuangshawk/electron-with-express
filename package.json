@@ -16,7 +16,7 @@
     "scripts": {
         "build": "tsc",
         "start": "tsc && electron .",
-        "pack": "tsc && cd .. && electron-packager ./electron-with-express --icon=./electron-with-express/dist/favicon.ico --ignore=\"^(?!(.*node_modules|.*dist))(.*src.*|.*screenshots.*|.*tsconfig.*|.*README.*|.*git.*)\" --asar.unpack=*.{node,dll,db} --overwrite"
+        "pack": "tsc && cd .. && electron-packager ./electron-with-express --name CDM-Maintainance --icon=./electron-with-express/dist/favicon.ico --ignore=\"^(?!(.*node_modules|.*dist))(.*src.*|.*screenshots.*|.*tsconfig.*|.*README.*|.*git.*)\" --asar.unpack=*.{node,dll,db} --overwrite"
     },
     "dependencies": {
         "body-parser": "^1.20.2",

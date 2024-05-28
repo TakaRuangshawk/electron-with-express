@@ -90,12 +90,12 @@ function createWindow() {
     y: bounds.y,
     fullscreen: true,
     frame: false,
-    
     icon: path.join(__dirname, "..", "favicon.ico"),
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       webSecurity: false,
       preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true
     },
   });
 

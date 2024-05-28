@@ -20,6 +20,7 @@
             <button type="button" onclick="sendMessage('sendlog : ' + document.getElementById('messageInput').value)">Send Message</button>
 
 		</form> -->
+
         <button class ="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 112px;background-color: white;border: 0;padding: 0;">
             <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
         </button>
@@ -33,7 +34,7 @@
           <div class="modal-content">
             <span class="close">&times;</span>
             <div class="" id="statusPicture">
-               <img  src="./pic/home_ok.png" style="height: 150px;" /> 
+               <img  src="./pic/home_ok.png" style="height: 100px;" /> 
             </div>
             <p id="statusMessage"></p>
             <div class="" id="terminalCDM">
@@ -79,7 +80,7 @@
             banknote: [
               { sum: 400, note_name: "20", value: 20, note: 20 },
               { sum: 1000, note_name: "50", value: 50, note: 20 },
-              { sum: 3000, note_name: "100", value: 100, note: 30 },
+              { sum: 300000, note_name: "100", value: 100, note: 3000 },
               { sum: 15000, note_name: "500", value: 500, note: 30 },
               { sum: 30000, note_name: "1000", value: 1000, note: 30 }
             ]
@@ -243,7 +244,7 @@
           
           else if (key === 'note_name') {
             // Format the note_name with commas and add the '฿' symbol
-            const formattedNoteName = parseInt(note[key]).toLocaleString() + '฿';
+            const formattedNoteName = parseInt(note[key]).toLocaleString() + ' THB';
             cell.textContent = formattedNoteName;
           } else {
             cell.textContent = note[key];
@@ -294,11 +295,11 @@
         // Define the table data
         const tableData = [
             { banknote: "Banknotes", pcs: "PCS.", amount: "Amounts" },
-            { banknote: '20฿', pcs: 0, amount: 0 },
-            { banknote: '50฿', pcs: 0, amount: 0 },
-            { banknote: '100฿', pcs: 0, amount: 0 },
-            { banknote: '500฿', pcs: 0, amount: 0 },
-            { banknote: '1,000฿', pcs: 0, amount: 0 },
+            { banknote: '20 THB', pcs: 0, amount: 0 },
+            { banknote: '50 THB', pcs: 0, amount: 0 },
+            { banknote: '100 THB', pcs: 0, amount: 0 },
+            { banknote: '500 THB', pcs: 0, amount: 0 },
+            { banknote: '1,000 THB', pcs: 0, amount: 0 },
             { banknote: "Total", pcs: 0, amount: 0, colspan: 1 }
         ];
     

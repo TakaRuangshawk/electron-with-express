@@ -1,5 +1,4 @@
 import { contextBridge, ipcRenderer } from "electron";
-
 contextBridge.exposeInMainWorld("api", {
 	getExpressAppUrl: () => ipcRenderer.invoke("get-express-app-url")
 });
@@ -10,10 +9,15 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 	}
 });
 
+// contextBridge.exposeInMainWorld('electron', {
+// 	ipcRenderer: ipcRenderer,
+// 	quitApp: () => {
+// 	  ipcRenderer.send('quit-app');
+// 	}
+//   });
+
 contextBridge.exposeInMainWorld('electron', {
-	ipcRenderer: ipcRenderer,
-	quitApp: () => {
-	  ipcRenderer.send('quit-app');
-	}
+	quitApp: () => ipcRenderer.send('quit-app'),
+	test: () => console.log('Test function called')
   });
   
