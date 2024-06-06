@@ -1,7 +1,69 @@
 <!DOCTYPE html>
 <%- include('include/head'); %>
 	<html lang="en">
+<style>
+  body {
+        margin: 0;
+        padding: 0;
+        background: url('./pic/bg_main.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
+    .reset-input{
+      width: 80%;
+      font-size: 32px;
+      padding: 15px;
+    }
+    #statusMessage_reset {
+        font-size: 26px;
+        color: #333;
+    }
 
+    #statusMessage_reset.success {
+        color: green;
+    }
+
+    #statusMessage_reset.error {
+        color: red;
+    }
+    .dropbtn {
+      background-color: transparent;
+      color: white;
+      padding: 16px;
+      font-size: 16px;
+      border: none;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      bottom: 10px;
+      left: 1740px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {background-color: #ddd;}
+
+    .dropdown:hover .dropdown-content {display: block;}
+
+    .dropdown:hover .dropbtn {background-color: #797a79;}
+</style>
 	<body>
 		<!-- <h1>
 			<%= title %>
@@ -20,12 +82,20 @@
             <button type="button" onclick="sendMessage('sendlog : ' + document.getElementById('messageInput').value)">Send Message</button>
 
 		</form> -->
-
+        <!-- <h1>Welcome, <%= username %>!</h1> -->
+        <div class="dropdown">
+          <button class="dropbtn"><img width="55px" src="./pic/icon_user.png" /></button>
+          <div class="dropdown-content">
+            <a style="white-space: nowrap;" id="changePasswordBtn" href="#">Reset Password</a>
+            <a href="/">Logout</a>
+          </div>
+        </div>
+        <!-- <button id="changePasswordBtn">Change Password</button> -->
         <button class ="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 112px;background-color: white;border: 0;padding: 0;">
             <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
         </button>
         
-        <div id="htmlContent"></div>
+       
         
         <!-- The Modal -->
         <div id="myModal" class="modal">
@@ -43,19 +113,46 @@
            <div class="fade-in-out" id="statusPrint">
             <img  src="./pic/icon_print.png" style="height: 150px;" /> 
          </div>
+         <div id="htmlContent"></div>
             <div id="tableContainer"></div>
-            <button class="button-19" id="fetchButton2" style="position: relative;left: 1090px; top: 200px;background-color: white;border: 0;padding: 0;">
-              <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Clear Cassaste" style="width: 100%; height: auto;    border-radius: 30px;">
-          </button>
+            <button class="button-19" id="fetchButton2" style="position: relative;left: 740px; top: 300px;background-color: white;border: 0;padding: 0;">
+              <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Clear Cassaste" style="width: 350px;height: auto;    border-radius: 30px;">
+            </button>
+            <button class="button-19" id="exitmodal" style="position: relative;left: 760px; top: 300px;background-color: white;border: 0;padding: 0;">
+              <img id="fetchedImage" src="./pic/btn_exit.jpg" alt="Clear Cassaste" style="width: 350px;height: auto;    border-radius: 30px;">
+            </button>
           </div>
         
         </div>
+        <!-- The Modal -->
+        <div id="changePasswordModal" class="modal">
+          <div class="modal-content">
+              <h1 style="text-align: center;">RESET PASSWORD : <%= username.toUpperCase() %> </h2>
+              <form id="changePasswordForm" style="height: 700px;display: flex;flex-wrap: wrap;flex-direction: column;align-content: center;align-items: center;justify-content: space-evenly;">
+                  <!-- <label for="username">Username:</label> -->
+                  <input  type="hidden" id="username" name="username" value="<%= username %>" readonly required>
+                  <input class ="reset-input" type="password" id="oldPassword" name="oldPassword" required placeholder="OLD PASSWORD">
+                  <br>
+                  <input class ="reset-input" type="password" id="newPassword" name="newPassword" required placeholder="NEW PASSWORD">
+                  <br>
+                  <input class ="reset-input" type="password" id="confirmPassword" name="confirmPassword" required placeholder="CONFIRM NEW PASSWORD">
+                  <!-- Status Message -->
+                  <div id="statusMessage_reset" style="margin-bottom: 20px;"></div>
+                  <div>
+                    <button type="submit" style="background: transparent;border: 0;cursor:pointer;"><img style="border-radius: 25px;" src="./pic/btn_ok.jpg" /></button>
+                    <button id="close-modal" style="background: transparent;border: 0;cursor:pointer;" type=""><img style="border-radius: 25px;" src="./pic/btn_exit.jpg" /></button>
+                  </div>
+                  
+              </form>
+          </div>
+        </div>
 	</body>
     <script>
+   
       let configData; 
       const pElement = document.getElementById('statusMessage');
       let dataString = '';
-      sendMessage('[Client] : App Start');
+      sendMessage('[Client] : App Start') ;
       async function loadUsage(filename) {
           try {
               configData = await loadJsonData(filename);
@@ -70,8 +167,19 @@
       // Get the modal
       var modal = document.getElementById("myModal");
       var span = document.getElementsByClassName("close")[0];
+      const data_ab = {
+            device_name: '-',
+            banknote: [
+              { sum: '-', note_name: "20", value: 20, note: '-' },
+              { sum: '-', note_name: "50", value: 50, note: '-' },
+              { sum: '-', note_name: "100", value: 100, note: '-' },
+              { sum: '-', note_name: "500", value: 500, note: '-' },
+              { sum: '-', note_name: "1000", value: 1000, note: '-' }
+            ]
+          };
       document.getElementById('fetchButton').addEventListener('click', function() {
         modal.style.display = "block";
+        document.getElementById('htmlContent').innerHTML = '';
         console.log('Config data2:', configData.env);
         if (configData.env === 'dev') {
           // Do hardcode
@@ -86,10 +194,14 @@
             ]
           };
           
-          const table = createTable(data);
+          
+          //const table = createTable(data,1);
+          const data_err = {"respCode":"False","respDesc":"dev error","errors":[{"devName":"CashInDevice","descrption":"The device is offline"}]}
+          const table = createTable(data_ab,0);
+          document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption;
           document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
-          document.getElementById('tableContainer').appendChild(table);
-          dataString = dataToString(data);
+          document.getElementById('tableContainer').appendChild(table);   
+          dataString = dataToString(data_ab);
           sendMessage('[GetBankNote Request] : ' + dataString);
           const postData = {
             device_name: data.device_name,
@@ -116,11 +228,11 @@
         })
           .then(response => response.json()) // Convert response to JSON
           .then(data => {
-            // document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
+           
             console.log(data);
             dataString = dataToString(data);
             sendMessage('[GetBankNote Request] : ' + dataString);
-            const table = createTable(data);
+            const table = createTable(data,1);
             document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
             document.getElementById('tableContainer').appendChild(table);
             // Create the payload for the POST request
@@ -152,16 +264,33 @@
               sendMessage('[Print Request] : Complete')
               // document.getElementById('htmlContent').innerHTML = JSON.stringify(result, null, 2);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+              console.error('Error:', error);
+              const table = createTable(data_ab, 0);
+              document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
+              document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
+              document.getElementById('tableContainer').appendChild(table); 
+            });
           })
-          .catch(error => console.error('Error:', error));
+          .catch(error => {
+            console.error('Error:', error);
+            const table = createTable(data_ab, 0);
+            document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
+            document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
+            document.getElementById('tableContainer').appendChild(table); 
+          });
         }
         
       });
     document.getElementById('fetchButton2').addEventListener('click', function() {
+      document.getElementById('htmlContent').innerHTML = ''
+      const data_err = {"respCode":"False","respDesc":"print form error","errors":[{"devName":"ReceiptPrinter","descrption":"Due to a hardware error or other condition,the state of the cash units cannot be determined"}]};
       if (configData.env === 'dev') {
-        recreateTable();
-        sendMessage('[Replenish Request] : Complete');
+        recreateTable(0);
+        document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
+        sendMessage('[Replenish Request] : Inomplete');
+        //recreateTable(1);
+        //sendMessage('[Replenish Request] : Complete');
       }
       else{
         fetch('http://localhost:5001/lpk/api/v1/kiosk/set_banknote', {
@@ -188,11 +317,12 @@
           console.log('Success:', data);
           
           sendMessage('[Replenish Request] : Complete');
-          recreateTable();
+          recreateTable(1);
         })
         .catch(error => {
-          alert('Something Went Wrong');
+          recreateTable(0);
           sendMessage('[Replenish Request] : Incomplete');
+          document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
           console.error('Error:', error);
         });
       }
@@ -201,7 +331,7 @@
     });
     </script>
 	<script>
-   function createTable(data) {
+   function createTable(data,flag) {
     pElement.textContent = '';
       const table = document.createElement('table');
       const headerRow = table.insertRow();
@@ -230,27 +360,49 @@
         const row = table.insertRow();
         headerOrder.forEach(key => {
           const cell = row.insertCell();
-          if (key === 'sum') {
-            // Calculate the sum as value * note
-            const sum = parseInt(note.value) * parseInt(note.note);
-            cell.textContent = sum.toLocaleString();
-            totalAmounts += sum;
-          } else if (key === 'note') {
-            // Parse the note as an integer
-            const pcs = parseInt(note.note);
-            cell.textContent = pcs.toLocaleString();
-            totalPCS += pcs;
-          }
-          
-          else if (key === 'note_name') {
-            // Format the note_name with commas and add the '฿' symbol
-            const formattedNoteName = parseInt(note[key]).toLocaleString() + ' THB';
-            cell.textContent = formattedNoteName;
-          } else {
-            cell.textContent = note[key];
-          }
+           if (key === 'sum') {
+                // Calculate the sum as value * note if note is a number
+                if (!isNaN(parseInt(note.note))) {
+                    const sum = parseInt(note.value) * parseInt(note.note);
+                    cell.textContent = sum.toLocaleString();
+                    totalAmounts += sum;
+                } else {
+                    cell.textContent = '-';
+                }
+            } else if (key === 'note') {
+                // Parse the note as an integer if it's a number
+                if (!isNaN(parseInt(note.note))) {
+                    const pcs = parseInt(note.note);
+                    cell.textContent = pcs.toLocaleString();
+                    totalPCS += pcs;
+                } else {
+                    cell.textContent = '-';
+                }
+            } else if (key === 'note_name') {
+                // Format the note_name with commas and add the '฿' symbol
+                const formattedNoteName = parseInt(note[key]).toLocaleString() + ' THB';
+                cell.textContent = formattedNoteName;
+            } else {
+                cell.textContent = note[key];
+            }
         });
-      pElement.textContent = 'Print Successful';
+      var image = document.getElementById('statusPicture').querySelector('img');
+      var statusPrint = document.getElementById('statusPrint');
+      var fetchButton2 = document.getElementById('fetchButton2');
+      if(flag === 1){
+        pElement.textContent = 'Print Total Successful';
+        image.src = './pic/home_ok.png';
+        statusPrint.style.display = 'block';
+        fetchButton2.disabled = false; // Ensure button is enabled
+        fetchButton2.style.filter = 'none'; // Reset image to its original state
+      }
+      else {
+        pElement.textContent = 'Print Total Fail';
+        image.src = './pic/home_error.png';
+        statusPrint.style.display = 'none';
+        fetchButton2.disabled = true; // Disable the button
+        fetchButton2.style.filter = 'grayscale(100%)'; // Change the image to gray
+      }
       });
     
       // Add total row
@@ -271,21 +423,24 @@
         
     span.onclick = function() {
       modal.style.display = "none";
+      changePasswordModal.style.display = "none";
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
       if (event.target == modal) {
         modal.style.display = "none";
+        changePasswordModal.style.display = "none";
       }
     }
     // Function to delete inner table and recreate it
-    function recreateTable() {
+    function recreateTable(flag) {
         pElement.textContent = '';
         // Get the container div
         const tableContainer = document.getElementById('tableContainer');
         
-        // Delete the inner HTML of the container
+        if(flag === 1){
+
         tableContainer.innerHTML = '';
         
         // Create new table elements
@@ -344,7 +499,111 @@
       
         // Append table to the container
         tableContainer.appendChild(table);
-        pElement.textContent = 'Replenish Complete';
+                  
+      }
+      else {
+        //same table as createtable
+      }
+        var image = document.getElementById('statusPicture').querySelector('img');
+        //pElement.textContent = 'Replenish Complete';
+        if(flag === 1){
+        pElement.textContent = 'Replenish Cash Successful';
+        image.src = './pic/home_ok.png';
+        statusPrint.style.display = 'block';
+        }
+        else {
+        pElement.textContent = 'Replenish Cash Fail';
+        image.src = './pic/home_error.png';
+        statusPrint.style.display = 'none';
+        }
+
     }
+
+    //modal reset password handle
+     // Get the modal
+     var changePasswordModal = document.getElementById("changePasswordModal");
+
+      // Get the button that opens the modal
+      var changePasswordBtn = document.getElementById("changePasswordBtn");
+
+      var closeModalBtn = document.getElementById("close-modal");
+      var exitModalBtn = document.getElementById("exitmodal");
+      // When the user clicks the button, open the modal 
+      changePasswordBtn.onclick = function() {
+          document.getElementById('changePasswordForm').reset();
+          const statusMessage = document.getElementById('statusMessage');
+          statusMessage.textContent = '';
+          statusMessage.className = '';
+          document.querySelectorAll('.reset-input').forEach(input => input.classList.remove('error'));
+          changePasswordModal.style.display = "block";
+
+      }
+      closeModalBtn.onclick = function() {
+          changePasswordModal.style.display = "none";
+
+      }
+      exitModalBtn.onclick = function() {
+          modal.style.display = "none";
+
+      }
+
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+          if (event.target == changePasswordModal) {
+              changePasswordModal.style.display = "none";
+          }
+      }
+
+      document.getElementById('changePasswordForm').addEventListener('submit', async function(event) {
+          event.preventDefault();
+      
+          const username = document.getElementById('username').value;
+          const oldPassword = document.getElementById('oldPassword').value;
+          const newPassword = document.getElementById('newPassword').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+          // Clear previous status messages and input styles
+          const statusMessage_reset = document.getElementById('statusMessage_reset');
+          statusMessage_reset.textContent = '';
+          statusMessage_reset.className = '';
+          // Validate inputs
+          if (newPassword.length < 6) {
+              document.getElementById('newPassword').classList.add('error');
+              statusMessage_reset.textContent = 'Please enter password more than 6 digit.';
+              statusMessage_reset.classList.add('error');
+              return;
+          }
+          if (newPassword !== confirmPassword) {
+              document.getElementById('newPassword').classList.add('error');
+              document.getElementById('confirmPassword').classList.add('error');
+              statusMessage_reset.textContent = 'Please enter the same value again.';
+              statusMessage_reset.classList.add('error');
+              return;
+          }
+          try {
+              const response = await fetch('/change-password', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ username, oldPassword, newPassword })
+              });
+            
+              const result = await response.json();
+              if (response.ok) {
+                statusMessage_reset.textContent = 'Password changed successfully';
+                statusMessage_reset.classList.add('success');
+                document.getElementById('changePasswordForm').reset();
+              } else {
+                  throw new Error(result.error || 'Password change failed');
+              }
+                } catch (error) {
+                  if (error.message === 'Incorrect old password') {
+                      document.getElementById('oldPassword').classList.add('error');
+                      statusMessage_reset.textContent = 'Please enter correct password.';
+                  } else {
+                    statusMessage_reset.textContent = 'Error: ' + error.message;
+                  }
+                  statusMessage_reset.classList.add('error');
+              }
+      });
     </script>
 	</html>

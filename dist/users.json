@@ -1,0 +1,8 @@
+{
+  "administrator": {
+    "password": "admin123"
+  },
+  "bankoperation": {
+    "password": "bank123"
+  }
+}

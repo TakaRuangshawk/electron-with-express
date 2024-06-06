@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: url('./pic/Pic_Home.png') no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .login-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 30px;
+        border-radius: 30px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 800px;
+        left: 400px;
+        position: relative;
+        height: 700px;
+    }
+    .login-box h1 {
+        margin-bottom: 30px;
+        color: #ff7f00; /* Match the color of "ATMC Management" from the image */
+        background-color: white;
+        padding: 25px;
+        position: relative;
+        bottom: 70px;
+        border-radius: 25px;
+        font-size: 42px;
+    }
+    .login-box button {
+        display: block;
+        height: 40%;
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        background-color: #ddd;
+        border: 3px black solid;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .login-box button:hover {
+        background-color: #ff7f00;
+    }
+    .login-box input {
+        display: block;
+        width: 773px;
+        padding: 10px;
+        margin: 10px 0;
+        border: 3px solid #ccc;
+        border-radius: 5px;
+        text-align: center;
+        position: relative;
+        bottom: 50px;
+    }
+    .login-box .submit-btn {
+        background: url('/path/to/btn_login.jpg') no-repeat center center;
+        background-size: contain;
+        color: transparent;
+        border: none;
+        cursor: pointer;
+        height: 50px;
+        transition: background-color 0.3s;
+    }
+    .login-box .submit-btn:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    .user-btn {
+        font-size: 36px;
+        font-weight: bolder;
+        padding: 15px 30px;
+        margin: 10px;
+        border: 2px solid #ccc; /* Default border color */
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .user-btn.selected {
+        border-color: #ffa500; /* Orange border when selected */
+        background-color: #ffebcd; /* Light background to indicate selection */
+    }
+
+    .user-btn:active {
+        background-color: #ffda77; /* Slightly darker background on press */
+        transform: translateY(2px); /* Simulates press down effect */
+        box-shadow: 0 5px #666; /* Shadow effect to give depth */
+    }
+
+    .user-btn:not(.selected):hover {
+        border-color: #999; /* Change border color on hover if not selected */
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>ATMC Management</h1>
+            
+            <div style=" bottom: 70px;position: relative;height: 300px;align-content: center;">
+                <!-- Buttons to select the user type -->
+                <button type="button" class="user-btn" data-username="administrator" onclick="setUsername('administrator')">ADMINISTRATOR</button>
+                <button type="button" class="user-btn" data-username="bankoperation" onclick="setUsername('bankoperation')">BANK OPERATION</button>
+
+            </div>  
+            <form id="loginForm">
+                <input type="hidden" id="username" name="username" required>
+                <!-- <label for="password">Password:</label> -->
+                <input type="password" style="font-size: 36px;font-weight: bolder;" id="password" name="password" required>
+                <br>
+                <div id="error" style="color:red;position: relative;bottom: 50px;font-size: 26px;"></div>
+                <button type="submit" style=" background: transparent;border: none;position: relative;bottom: 50px;">
+                    <img id="fetchedImage" src="./pic/btn_login.jpg" alt="Login" style="border-radius: 30px;">
+
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function setUsername(username) {
+            // Set the username value
+            document.getElementById('username').value = username;
+
+            // Get all buttons with the 'user-btn' class
+            const buttons = document.querySelectorAll('.user-btn');
+
+            // Loop through all buttons and remove the 'selected' class
+            buttons.forEach(button => {
+                button.classList.remove('selected');
+            });
+        
+            // Find the button that matches the username (case-insensitive) using data-username attribute
+            const activeButton = Array.from(buttons).find(button => 
+                button.getAttribute('data-username').toUpperCase() === username.toUpperCase()
+            );
+        
+            if (activeButton) {
+                activeButton.classList.add('selected');
+            }
+        }
+
+
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const result = await response.json();
+                    throw new Error(result.error || 'Login failed');
+                }
+
+                window.location.href = `/index?username=${username}`;
+            } catch (error) {
+                document.getElementById('error').innerText = error.message;
+            }
+        });
+    </script>
+</body>
+</html>
