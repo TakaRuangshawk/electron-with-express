@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%- include('include/head'); %>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -166,9 +167,11 @@
                     const result = await response.json();
                     throw new Error(result.error || 'Login failed');
                 }
-
+                sendMessage('[Login] Login Complete : ' + username);
                 window.location.href = `/index?username=${username}`;
+
             } catch (error) {
+                sendMessage('[Login] Login Fail : ' + username + ' : ' + error.message);
                 document.getElementById('error').innerText = error.message;
             }
         });

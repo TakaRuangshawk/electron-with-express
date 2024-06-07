@@ -61,7 +61,7 @@ const loginHandler = (req: Request, res: Response) => {
   const { username, password } = req.body;
   const users = readUsers();
   const user = users.find(u => u.username === username && u.password === password);
-  if(user?.username === undefined){
+  if(username === ''){
     res.status(401).json({ error: 'Please select account user ' });
   }
   else{

@@ -8,6 +8,15 @@
         background: url('./pic/bg_main.jpg') no-repeat center center fixed;
         background-size: cover;
         font-family: Arial, sans-serif;
+        animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
     .reset-input{
       width: 80%;
@@ -194,13 +203,19 @@
           };
           
           
-          //const table = createTable(data,1);
-          const data_err = {"respCode":"False","respDesc":"dev error","errors":[{"devName":"CashInDevice","descrption":"The device is offline"}]}
-          const table = createTable(data_ab,0);
-          document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption;
+          const table = createTable(data,1); //normal case
+
+          //const data_err = {"respCode":"False","respDesc":"dev error","errors":[{"devName":"CashInDevice","descrption":"The device is offline"}]}//abnormal case
+          //const table = createTable(data_ab,0);
+          //document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption;
+          //sendMessage('[Print Request] : Failed' + ' && Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption);
+
           document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
           document.getElementById('tableContainer').appendChild(table);   
-          dataString = dataToString(data_ab);
+          
+          dataString = dataToString(data); //normal case
+          
+          //dataString = dataToString(data_ab); //abnormal case
           sendMessage('[GetBankNote Request] : ' + dataString);
           const postData = {
             device_name: data.device_name,
@@ -260,7 +275,7 @@
             .then(response => response.json())
             .then(result => {
               console.log('Success:', result);
-              sendMessage('[Print Request] : Complete')
+              sendMessage('[Print Request] : Complete');
               // document.getElementById('htmlContent').innerHTML = JSON.stringify(result, null, 2);
             })
             .catch(error => {
@@ -269,6 +284,7 @@
               document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
               document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
               document.getElementById('tableContainer').appendChild(table); 
+              sendMessage('[Print Request] : Failed' + ' && Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption);
             });
           })
           .catch(error => {
@@ -277,6 +293,7 @@
             document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
             document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
             document.getElementById('tableContainer').appendChild(table); 
+            sendMessage('[GetBankNote Request] : Failed' + ' && Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption);
           });
         }
         
@@ -285,11 +302,11 @@
       document.getElementById('htmlContent').innerHTML = ''
       const data_err = {"respCode":"False","respDesc":"print form error","errors":[{"devName":"ReceiptPrinter","descrption":"Due to a hardware error or other condition,the state of the cash units cannot be determined"}]};
       if (configData.env === 'dev') {
-        recreateTable(0);
-        document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
-        sendMessage('[Replenish Request] : Inomplete');
-        //recreateTable(1);
-        //sendMessage('[Replenish Request] : Complete');
+        // recreateTable(0);
+        // document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
+        // sendMessage('[Replenish Request] : Incomplete'+ ' && Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption);
+        recreateTable(1);
+        sendMessage('[Replenish Request] : Complete');
       }
       else{
         fetch('http://localhost:5001/lpk/api/v1/kiosk/set_banknote', {
@@ -320,7 +337,7 @@
         })
         .catch(error => {
           recreateTable(0);
-          sendMessage('[Replenish Request] : Incomplete');
+          sendMessage('[Replenish Request] : Incomplete'+ ' && Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption);
           document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
           console.error('Error:', error);
         });
