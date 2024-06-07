@@ -9,7 +9,7 @@
     body {
         margin: 0;
         padding: 0;
-        background: url('./pic/Pic_Home.png') no-repeat center center fixed;
+        background: url('./pic/bg_login.jpg') no-repeat center center fixed;
         background-size: cover;
         font-family: Arial, sans-serif;
     }
@@ -20,13 +20,13 @@
         height: 100vh;
     }
     .login-box {
-        background: rgba(255, 255, 255, 0.8);
+        /* background: rgba(255, 255, 255, 0.8); */
         padding: 30px;
         border-radius: 30px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
         text-align: center;
-        width: 800px;
-        left: 400px;
+        width: 900px;
+        left: 330px;
         position: relative;
         height: 700px;
     }
@@ -41,13 +41,9 @@
         font-size: 42px;
     }
     .login-box button {
-        display: block;
-        height: 40%;
+        height: 120px;
         width: 100%;
-        padding: 15px;
         margin: 10px 0;
-        background-color: #ddd;
-        border: 3px black solid;
         border-radius: 10px;
         cursor: pointer;
         transition: background-color 0.3s;
@@ -57,14 +53,14 @@
     }
     .login-box input {
         display: block;
-        width: 773px;
+        width: 875px;
         padding: 10px;
         margin: 10px 0;
         border: 3px solid #ccc;
         border-radius: 5px;
         text-align: center;
         position: relative;
-        bottom: 50px;
+        top: 80px;
     }
     .login-box .submit-btn {
         background: url('/path/to/btn_login.jpg') no-repeat center center;
@@ -74,6 +70,7 @@
         cursor: pointer;
         height: 50px;
         transition: background-color 0.3s;
+        
     }
     .login-box .submit-btn:hover {
         background-color: rgba(0, 0, 0, 0.1);
@@ -107,9 +104,9 @@
 <body>
     <div class="container">
         <div class="login-box">
-            <h1>ATMC Management</h1>
+            <!-- <h1>ATMC Management</h1> -->
             
-            <div style=" bottom: 70px;position: relative;height: 300px;align-content: center;">
+            <div style=" top: 100px;position: relative;height: 300px;align-content: center;">
                 <!-- Buttons to select the user type -->
                 <button type="button" class="user-btn" data-username="administrator" onclick="setUsername('administrator')">ADMINISTRATOR</button>
                 <button type="button" class="user-btn" data-username="bankoperation" onclick="setUsername('bankoperation')">BANK OPERATION</button>
@@ -118,11 +115,11 @@
             <form id="loginForm">
                 <input type="hidden" id="username" name="username" required>
                 <!-- <label for="password">Password:</label> -->
-                <input type="password" style="font-size: 36px;font-weight: bolder;" id="password" name="password" required>
+                <input type="password" style="font-size: 75px;font-weight: bolder;" id="password" name="password" required>
                 <br>
-                <div id="error" style="color:red;position: relative;bottom: 50px;font-size: 26px;"></div>
-                <button type="submit" style=" background: transparent;border: none;position: relative;bottom: 50px;">
-                    <img id="fetchedImage" src="./pic/btn_login.jpg" alt="Login" style="border-radius: 30px;">
+                <div id="error" style="color:red;position: relative;top: 60px;font-size: 26px;text-align: left;"></div>
+                <button type="submit" style=" background: transparent;border: none;position: relative;top: 65px;padding: 0;">
+                    <img id="fetchedImage" src="./pic/btn_login.jpg" alt="Login" style="width: 900px;border-radius: 25px;">
 
                 </button>
             </form>

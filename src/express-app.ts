@@ -61,11 +61,15 @@ const loginHandler = (req: Request, res: Response) => {
   const { username, password } = req.body;
   const users = readUsers();
   const user = users.find(u => u.username === username && u.password === password);
-
-  if (user) {
-    res.json({ success: true, redirect: `/index?username=${username}` });
-  } else {
-    res.status(401).json({ error: 'Please enter correct password' });
+  if(user?.username === undefined){
+    res.status(401).json({ error: 'Please select account user ' });
+  }
+  else{
+    if (user) {
+      res.json({ success: true, redirect: `/index?username=${username}` });
+    } else {
+      res.status(401).json({ error: 'Please enter correct password ' });
+    }
   }
 };
 
