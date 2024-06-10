@@ -88,7 +88,9 @@ function createWindow() {
     height: bounds.height,
     x: bounds.x,
     y: bounds.y,
+    kiosk: true,
     fullscreen: true,
+    alwaysOnTop: true,
     frame: false,
     icon: path.join(__dirname, "..", "favicon.ico"),
     webPreferences: {

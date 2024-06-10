@@ -32,7 +32,7 @@ function writeLogToFile(logMessage: string) {
   });
 }
 
-const filePath = path.join(__dirname, 'users.json');
+const filePath = path.join(logDirectory, 'users.json');
 const defaultUsers = [
   { username: 'administrator', password: '111111' },
   { username: 'bankoperation', password: '111111' },

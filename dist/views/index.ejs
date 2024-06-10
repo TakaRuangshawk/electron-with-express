@@ -110,7 +110,8 @@
         
           <!-- Modal content -->
           <div class="modal-content">
-            <span class="close">&times;</span>
+            <!-- <span class="close">&times;</span> -->
+            <span class="close"></span>
             <div class="" id="statusPicture">
                <img  src="./pic/home_ok.png" style="height: 100px;" /> 
             </div>
@@ -376,6 +377,8 @@
         const row = table.insertRow();
         headerOrder.forEach(key => {
           const cell = row.insertCell();
+          cell.style.textAlign = 'right';
+          cell.style.paddingRight = '15px';
            if (key === 'sum') {
                 // Calculate the sum as value * note if note is a number
                 if (!isNaN(parseInt(note.note))) {
@@ -424,12 +427,18 @@
       // Add total row
       const totalRow = table.insertRow();
       const totalBanknoteCell = totalRow.insertCell();
-      totalBanknoteCell.textContent = 'Total';
+      totalBanknoteCell.textContent = 'TOTAL';
+      totalBanknoteCell.style.textAlign = 'right';
+      totalBanknoteCell.style.paddingRight = '15px';
       totalBanknoteCell.colSpan = 1;
       const totalPCSCell = totalRow.insertCell();
       totalPCSCell.textContent = totalPCS.toLocaleString();
+      totalPCSCell.style.textAlign = 'right';
+      totalPCSCell.style.paddingRight = '15px';
       const totalAmountsCell = totalRow.insertCell();
       totalAmountsCell.textContent = totalAmounts.toLocaleString();
+      totalAmountsCell.style.textAlign = 'right';
+      totalAmountsCell.style.paddingRight = '15px';
     
       return table;
     }
@@ -471,7 +480,7 @@
             { banknote: '100 THB', pcs: 0, amount: 0 },
             { banknote: '500 THB', pcs: 0, amount: 0 },
             { banknote: '1,000 THB', pcs: 0, amount: 0 },
-            { banknote: "Total", pcs: 0, amount: 0, colspan: 1 }
+            { banknote: "TOTAL", pcs: 0, amount: 0, colspan: 1 }
         ];
     
         // Loop through the data and create rows and cells
@@ -495,8 +504,15 @@
                 const td2 = document.createElement('td');
                 const td3 = document.createElement('td');
                 td1.textContent = row.banknote;
+                td1.style.textAlign = 'right';
+                td1.style.paddingRight = '15px';
                 td2.textContent = row.pcs;
+                td2.style.textAlign = 'right';
+                td2.style.paddingRight = '15px';
                 td3.textContent = row.amount;
+                td3.style.textAlign = 'right';
+                td3.style.paddingRight = '15px';
+
             
                 if (row.colspan) {
                     td1.colSpan = row.colspan;
