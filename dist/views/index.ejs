@@ -291,10 +291,10 @@
           .catch(error => {
             console.error('Error:', error);
             const table = createTable(data_ab, 0);
-            document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
+            document.getElementById('htmlContent').innerHTML = 'Err : The device is offline.';
             document.getElementById('tableContainer').innerHTML = ''; // Clear previous table
             document.getElementById('tableContainer').appendChild(table); 
-            sendMessage('[GetBankNote Request] : Failed' + ' && Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption);
+            sendMessage('[GetBankNote Request] : Failed' + ' && Err : Err : The device is offline.');
           });
         }
         
@@ -303,11 +303,24 @@
       document.getElementById('htmlContent').innerHTML = ''
       const data_err = {"respCode":"False","respDesc":"print form error","errors":[{"devName":"ReceiptPrinter","descrption":"Due to a hardware error or other condition,the state of the cash units cannot be determined"}]};
       if (configData.env === 'dev') {
-        // recreateTable(0);
         // document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
         // sendMessage('[Replenish Request] : Incomplete'+ ' && Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption);
-        recreateTable(1);
-        sendMessage('[Replenish Request] : Complete');
+        recreateTable(0);
+        let errMsg = 'An unexpected error occurred';
+            let devName = 'Unknown Device';
+            if (data_err instanceof SyntaxError) {
+                errMsg = 'Error parsing JSON data';
+            } else if (data_err.errors && data_err.errors[0] && data_err.errors[0].devName) {
+                errMsg = data_err.errors[0].descrption; // assuming the property name is 'description'
+                devName = data_err.errors[0].devName;
+                console.log(errMsg + ' : ' + devName);
+            } else if (data_err.message) {
+                errMsg = data_err.message;
+            }
+        document.getElementById('htmlContent').innerHTML = 'Err : Something Went Wrong.';
+        sendMessage('[Replenish Request] : Incomplete');
+        //recreateTable(1);
+        //sendMessage('[Replenish Request] : Complete');
       }
       else{
         fetch('http://localhost:5001/lpk/api/v1/kiosk/set_banknote', {
@@ -332,19 +345,26 @@
         .then(data => {
           // document.getElementById('htmlContent').innerHTML = JSON.stringify(data, null, 2);
           console.log('Success:', data);
-          
           sendMessage('[Replenish Request] : Complete');
           recreateTable(1);
         })
-        .catch(error => {
-          recreateTable(0);
-          sendMessage('[Replenish Request] : Incomplete'+ ' && Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption);
-          document.getElementById('htmlContent').innerHTML = 'Err : [' + error.errors[0].devName + '] ' + error.errors[0].descrption;
-          console.error('Error:', error);
-        });
+         .catch(error => {
+            console.error('Error:', error);
+            let errMsg = 'Something Went Wrong';
+            let devName = 'CashPayment  ';
+            if (error instanceof SyntaxError) {
+                errMsg = 'Error parsing JSON data';
+            } else if (error.errors && error.errors[0] && error.errors[0].devName) {
+                errMsg = error.errors[0].description; // assuming the property name is 'description'
+                devName = error.errors[0].devName;
+            } else if (error.message) {
+                errMsg = error.message;
+            }
+            document.getElementById('htmlContent').innerHTML = 'Err: [' + devName + '] ' + errMsg;
+            recreateTable(0);
+            sendMessage('[Replenish Request] : Incomplete && Err: [' + devName + '] ' + errMsg);
+          });
       }
-        
-
     });
     </script>
 	<script>
