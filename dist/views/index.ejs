@@ -303,8 +303,8 @@
       document.getElementById('htmlContent').innerHTML = ''
       const data_err = {"respCode":"False","respDesc":"print form error","errors":[{"devName":"ReceiptPrinter","descrption":"Due to a hardware error or other condition,the state of the cash units cannot be determined"}]};
       if (configData.env === 'dev') {
-        // document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
-        // sendMessage('[Replenish Request] : Incomplete'+ ' && Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption);
+        //document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
+        //sendMessage('[Replenish Request] : Incomplete'+ ' && Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption);
         recreateTable(0);
         let errMsg = 'An unexpected error occurred';
             let devName = 'Unknown Device';

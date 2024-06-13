@@ -9,8 +9,8 @@ import http from "http";
 import createError from "http-errors";
 import { expressPort, logDrive } from "../package.json";
 import fs from "fs";
+import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-
 const app = express();
 const router = express.Router();
 
@@ -38,10 +38,24 @@ const defaultUsers = [
   { username: 'bankoperation', password: '111111' },
 ];
 
-if (!fs.existsSync(filePath)) {
-  fs.writeFileSync(filePath, JSON.stringify(defaultUsers, null, 2));
-}
+const hashDefaultUsers = async (): Promise<{ username: string, password: string }[]> => {
+  return Promise.all(defaultUsers.map(async user => ({
+    username: user.username,
+    password: await bcrypt.hash(user.password, 10)
+  })));
+};
 
+// if (!fs.existsSync(filePath)) {
+//   fs.writeFileSync(filePath, JSON.stringify(defaultUsers, null, 2));
+// }
+// Ensure the file is initialized properly with hashed passwords
+const initializeUsersFile = async () => {
+  if (!fs.existsSync(filePath)) {
+    const hashedUsers = await hashDefaultUsers();
+    fs.writeFileSync(filePath, JSON.stringify(hashedUsers, null, 2));
+  }
+};
+initializeUsersFile().catch(console.error);
 // Function to read users from the JSON file
 const readUsers = (): { username: string, password: string }[] => {
   if (fs.existsSync(filePath)) {
@@ -56,35 +70,75 @@ const writeUsers = (users: { username: string, password: string }[]): void => {
   fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
 };
 
-const loginHandler = (req: Request, res: Response) => {
+// const loginHandler = (req: Request, res: Response) => {
+//   console.log('POST /login', req.body);
+//   const { username, password } = req.body;
+//   const users = readUsers();
+//   const user = users.find(u => u.username === username && u.password === password);
+//   if(username === ''){
+//     res.status(401).json({ error: 'Please select account user ' });
+//   }
+//   else{
+//     if (user) {
+//       res.json({ success: true, redirect: `/index?username=${username}` });
+//     } else {
+//       res.status(401).json({ error: 'Please enter correct password ' });
+//     }
+//   }
+// };
+const loginHandler = async (req: Request, res: Response) => {
   console.log('POST /login', req.body);
   const { username, password } = req.body;
-  const users = readUsers();
-  const user = users.find(u => u.username === username && u.password === password);
-  if(username === ''){
-    res.status(401).json({ error: 'Please select account user ' });
+
+  // Validate input
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Please provide both username and password.' });
   }
-  else{
-    if (user) {
+
+  const users = readUsers();
+  const user = users.find(u => u.username === username);
+
+  if (user) {
+    // Verify password with bcrypt
+    const match = await bcrypt.compare(password, user.password);
+    if (match) {
       res.json({ success: true, redirect: `/index?username=${username}` });
     } else {
-      res.status(401).json({ error: 'Please enter correct password ' });
+      res.status(401).json({ error: 'Please enter correct password.' });
     }
+  } else {
+    res.status(404).json({ error: 'User not found.' });
   }
 };
+// const changePasswordHandler = (req: Request, res: Response) => {
+//   console.log('POST /change-password', req.body);
+//   const { username, oldPassword, newPassword } = req.body;
+//   let users = readUsers();
+//   const userIndex = users.findIndex(u => u.username === username && u.password === oldPassword);
 
-const changePasswordHandler = (req: Request, res: Response) => {
+//   if (userIndex !== -1) {
+//     users[userIndex].password = newPassword;
+//     writeUsers(users);
+//     res.json({ message: 'Password changed successfully' });
+//   } else {
+//     res.status(400).json({ error: 'Please enter correct password' });
+//   }
+// };
+const changePasswordHandler = async (req: Request, res: Response) => {
   console.log('POST /change-password', req.body);
   const { username, oldPassword, newPassword } = req.body;
   let users = readUsers();
-  const userIndex = users.findIndex(u => u.username === username && u.password === oldPassword);
+  const user = users.find(u => u.username === username);
 
-  if (userIndex !== -1) {
-    users[userIndex].password = newPassword;
+  if (user && await bcrypt.compare(oldPassword, user.password)) {
+    // If old password matches, hash the new password and update it
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
     writeUsers(users);
     res.json({ message: 'Password changed successfully' });
   } else {
-    res.status(400).json({ error: 'Please enter correct password' });
+    // If the old password does not match
+    res.status(400).json({ error: 'Please enter the correct password' });
   }
 };
 
