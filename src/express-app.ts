@@ -64,7 +64,7 @@ const readUsers = (): { username: string, password: string }[] => {
   }
   return defaultUsers;
 };
-
+app.use('/d1config', express.static('D://d1config'));
 // Function to write users to the JSON file
 const writeUsers = (users: { username: string, password: string }[]): void => {
   fs.writeFileSync(filePath, JSON.stringify(users, null, 2));

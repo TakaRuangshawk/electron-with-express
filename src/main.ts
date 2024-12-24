@@ -90,7 +90,7 @@ function createWindow() {
     y: bounds.y,
     kiosk: true,
     fullscreen: true,
-    alwaysOnTop: true,
+    //alwaysOnTop: true,
     frame: false,
     icon: path.join(__dirname, "..", "favicon.ico"),
     webPreferences: {

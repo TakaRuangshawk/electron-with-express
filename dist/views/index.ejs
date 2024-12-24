@@ -156,22 +156,31 @@
           </div>
         </div>
 	</body>
+  <pre style="display: none;" id="output"></pre>
     <script>
-   
-      let configData; 
+      let configData = {}; 
       const pElement = document.getElementById('statusMessage');
       let dataString = '';
       sendMessage('[Client] : App Start') ;
       async function loadUsage(filename) {
-          try {
-              configData = await loadJsonData(filename);
-              console.log('Config data:', configData);
-              // Use configData here or pass it to other functions
-          } catch (error) {
-              console.error('Error in example usage:', error);
-          }
-      }
-      loadUsage('appsetting');
+        try {
+            // Fetch the JSON file from the server
+            const response = await fetch(`/d1config/${filename}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            configData = await response.json();
+            
+            // Log and display the config data
+            console.log('Config data:', configData);
+            document.getElementById("output").textContent = JSON.stringify(configData, null, 2);
+        } catch (error) {
+            console.error('Error in loading usage:', error);
+        }
+    }
+
+    // Call the function
+    loadUsage('appsetting.json');
 
       // Get the modal
       var modal = document.getElementById("myModal");
@@ -179,27 +188,28 @@
       const data_ab = {
             device_name: '-',
             banknote: [
-              { sum: '-', note_name: "20", value: 20, note: '-' },
-              { sum: '-', note_name: "50", value: 50, note: '-' },
-              { sum: '-', note_name: "100", value: 100, note: '-' },
-              { sum: '-', note_name: "500", value: 500, note: '-' },
-              { sum: '-', note_name: "1000", value: 1000, note: '-' }
+              { sum: '-', note_name: "2000", value: 2000, note: '-' },
+              { sum: '-', note_name: "5000", value: 5000, note: '-' },
+              { sum: '-', note_name: "10000", value: 10000, note: '-' },
+              { sum: '-', note_name: "50000", value: 50000, note: '-' },
+              { sum: '-', note_name: "100000", value: 100000, note: '-' }
             ]
           };
       document.getElementById('fetchButton').addEventListener('click', function() {
+        
         modal.style.display = "block";
         document.getElementById('htmlContent').innerHTML = '';
         console.log('Config data2:', configData.env);
-        if (configData.env === 'dev') {
+        if (configData.env === "dev") {
           // Do hardcode
           const data = {
             device_name: configData.devicename,
             banknote: [
-              { sum: 400, note_name: "20", value: 20, note: 20 },
-              { sum: 1000, note_name: "50", value: 50, note: 20 },
-              { sum: 300000, note_name: "100", value: 100, note: 3000 },
-              { sum: 15000, note_name: "500", value: 500, note: 30 },
-              { sum: 30000, note_name: "1000", value: 1000, note: 30 }
+              { sum: 40000, note_name: "2000", value: 2000, note: 20 },
+              { sum: 100000, note_name: "5000", value: 5000, note: 20 },
+              { sum: 300000, note_name: "10000", value: 10000, note: 3000 },
+              { sum: 1500000, note_name: "50000", value: 50000, note: 30 },
+              { sum: 3000000, note_name: "100000", value: 100000, note: 30 }
             ]
           };
           
@@ -305,22 +315,22 @@
       if (configData.env === 'dev') {
         //document.getElementById('htmlContent').innerHTML ='Err : ['+ data_err.errors[0].devName + '] \n' + data_err.errors[0].descrption;
         //sendMessage('[Replenish Request] : Incomplete'+ ' && Err : ['+ data_err.errors[0].devName + '] ' + data_err.errors[0].descrption);
-        recreateTable(0);
-        let errMsg = 'An unexpected error occurred';
-            let devName = 'Unknown Device';
-            if (data_err instanceof SyntaxError) {
-                errMsg = 'Error parsing JSON data';
-            } else if (data_err.errors && data_err.errors[0] && data_err.errors[0].devName) {
-                errMsg = data_err.errors[0].descrption; // assuming the property name is 'description'
-                devName = data_err.errors[0].devName;
-                console.log(errMsg + ' : ' + devName);
-            } else if (data_err.message) {
-                errMsg = data_err.message;
-            }
-        document.getElementById('htmlContent').innerHTML = 'Err : Something Went Wrong.';
+        //recreateTable(0);
+        //let errMsg = 'An unexpected error occurred';
+        //    let devName = 'Unknown Device';
+        //    if (data_err instanceof SyntaxError) {
+        //        errMsg = 'Error parsing JSON data';
+        //    } else if (data_err.errors && data_err.errors[0] && data_err.errors[0].devName) {
+        //        errMsg = data_err.errors[0].descrption; // assuming the property name is 'description'
+        //        devName = data_err.errors[0].devName;
+        //        console.log(errMsg + ' : ' + devName);
+        //    } else if (data_err.message) {
+        //        errMsg = data_err.message;
+        //    }
+        //document.getElementById('htmlContent').innerHTML = 'Err : Something Went Wrong.';
         sendMessage('[Replenish Request] : Incomplete');
-        //recreateTable(1);
-        //sendMessage('[Replenish Request] : Complete');
+        recreateTable(1);
+        sendMessage('[Replenish Request] : Complete');
       }
       else{
         fetch('http://localhost:5001/lpk/api/v1/kiosk/set_banknote', {
@@ -402,7 +412,7 @@
            if (key === 'sum') {
                 // Calculate the sum as value * note if note is a number
                 if (!isNaN(parseInt(note.note))) {
-                    const sum = parseInt(note.value) * parseInt(note.note);
+                    const sum = (parseInt(note.value) * parseInt(note.note))/100;
                     cell.textContent = sum.toLocaleString();
                     totalAmounts += sum;
                 } else {
@@ -419,7 +429,7 @@
                 }
             } else if (key === 'note_name') {
                 // Format the note_name with commas and add the '฿' symbol
-                const formattedNoteName = parseInt(note[key]).toLocaleString() + ' THB';
+                const formattedNoteName = parseInt(note[key]/100).toLocaleString() + ' THB';
                 cell.textContent = formattedNoteName;
             } else {
                 cell.textContent = note[key];
