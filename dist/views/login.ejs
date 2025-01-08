@@ -21,16 +21,16 @@
         height: 100vh;
     }
     .login-box {
-        /* background: rgba(255, 255, 255, 0.8); */
-        padding: 30px;
-        border-radius: 30px;
-        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
-        text-align: center;
-        width: 900px;
-        left: 330px;
-        position: relative;
-        height: 700px;
-    }
+    /* background: rgba(255, 255, 255, 0.8); */
+    /* padding: 30px; */
+    border-radius: 30px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    text-align: center;
+    /* width: 900px; */
+    left: 216px;
+    position: relative;
+    /* height: 700px; */
+}
     .login-box h1 {
         margin-bottom: 30px;
         color: #ff7f00; /* Match the color of "ATMC Management" from the image */
@@ -42,27 +42,28 @@
         font-size: 42px;
     }
     .login-box button {
-        height: 120px;
-        width: 100%;
-        margin: 10px 0;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+    /* height: 120px; */
+    width: 70%;
+    margin: 10px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
     .login-box button:hover {
         background-color: #ff7f00;
     }
     .login-box input {
-        display: block;
-        width: 875px;
-        padding: 10px;
-        margin: 10px 0;
-        border: 3px solid #ccc;
-        border-radius: 5px;
-        text-align: center;
-        position: relative;
-        top: 80px;
-    }
+    display: block;
+    width: 510px;
+    padding: 10px;
+    margin: 10px 0;
+    left: 112px;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    position: relative;
+    /* top: 80px; */
+}
     .login-box .submit-btn {
         background: url('/path/to/btn_login.jpg') no-repeat center center;
         background-size: contain;
@@ -77,15 +78,15 @@
         background-color: rgba(0, 0, 0, 0.1);
     }
     .user-btn {
-        font-size: 36px;
-        font-weight: bolder;
-        padding: 15px 30px;
-        margin: 10px;
-        border: 2px solid #ccc; /* Default border color */
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+    font-size: 36px;
+    font-weight: bolder;
+    padding: 15px 30px;
+    margin: 10px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
     .user-btn.selected {
         border-color: #ffa500; /* Orange border when selected */
@@ -116,11 +117,11 @@
             <form id="loginForm">
                 <input type="hidden" id="username" name="username" required>
                 <!-- <label for="password">Password:</label> -->
-                <input type="password" style="font-size: 75px;font-weight: bolder;" id="password" name="password" required>
+                <input type="password" style="font-size: 35px;font-weight: bolder;" id="password" name="password" required>
                 <br>
                 <div id="error" style="color:red;position: relative;top: 60px;font-size: 26px;text-align: left;"></div>
-                <button type="submit" style=" background: transparent;border: none;position: relative;top: 65px;padding: 0;">
-                    <img id="fetchedImage" src="./pic/btn_login.jpg" alt="Login" style="width: 900px;border-radius: 25px;">
+                <button type="submit" style=" background: transparent;border: none;position: relative;top: -5px;padding: 0;">
+                    <img id="fetchedImage" src="./pic/btn_login.jpg" alt="Login" style="width: 533px;border-radius: 25px;">
 
                 </button>
             </form>
