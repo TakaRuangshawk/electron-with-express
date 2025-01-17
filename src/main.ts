@@ -12,7 +12,6 @@ let mainWindow: BrowserWindow | null;
 // Path to log file
 const logFilePath = path.join(app.getPath("userData"), "app.log");
 
-
 const expressPath = appName.endsWith(`${name}.exe`)
   ? path.join("./resources/app.asar", "./dist/src/express-app.js")
   : "./dist/src/express-app.js";
@@ -131,7 +130,14 @@ function createWindow() {
     callback({ requestHeaders });
   },
 );
-
+mainWindow.webContents.on('did-finish-load', () => {
+  // Clear the cache for the current session
+  session.defaultSession.clearCache().then(() => {
+      console.log('Cache cleared successfully!');
+  }).catch(err => {
+      console.error('Failed to clear cache:', err);
+  });
+});
 mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
   const responseHeaders = details.responseHeaders as HeadersObject; // Type assertion
   if (!responseHeaders['Access-Control-Allow-Origin']) {

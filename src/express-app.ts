@@ -15,6 +15,8 @@ const app = express();
 const router = express.Router();
 
 const logDirectory = logDrive + "://logs";
+const agentConfigPath = 'D:\\SNBCSoft\\iStep\\agent\\config\\AgentConfig.ini';
+const serverConfigPath = 'D:\\SNBCSoft\\SNBC_HAL\\HalService\\config\\iStspServerConfig.ini';
 
 function writeLogToFile(logMessage: string) {
   const currentDate = new Date();
@@ -166,7 +168,61 @@ function sendMessageHandler(req: Request, res: Response) {
   writeLogToFile(logMessage);
   res.json({ success: true, message: "Message received and logged" });
 }
+function updateIniValue(filePath: string, section: string, key: string, newValue: string): boolean {
+  try {
+      let fileContent: string = fs.readFileSync(filePath, "utf-8");
 
+      // Regex to update the specific key inside the specified section
+      const regex = new RegExp(`(\\[${section}\\][\\s\\S]*?${key}\\s*=\\s*)(.*)`);
+      fileContent = fileContent.replace(regex, `$1${newValue}`);
+
+      fs.writeFileSync(filePath, fileContent, "utf-8");
+      console.log(`Updated ${key} in ${filePath}`);
+      return true;
+  } catch (error) {
+      console.error(`Error updating INI file: ${error}`);
+      return false;
+  }
+}
+function updateBothConfigsHandler(req: Request, res: Response) {
+  const { newValue } = req.body;
+  if (!newValue) {
+      return res.status(400).json({ success: false, message: "New value is required" });
+  }
+
+  // Update both INI files
+  const agentUpdated = updateIniValue(agentConfigPath, "DeviceConfig", "AssetCode", newValue);
+  const serverUpdated = updateIniValue(serverConfigPath, "kioskCode", "code", newValue);
+
+  if (agentUpdated && serverUpdated) {
+      res.json({ success: true, message: "Both INI files updated successfully!" });
+  } else {
+      res.status(500).json({ success: false, message: "Error updating one or both INI files" });
+  }
+}
+function getKioskCodeHandler(req: Request, res: Response) {
+  try {
+      // Ensure the file exists before reading
+      if (!fs.existsSync(agentConfigPath)) {
+          return res.status(404).json({ success: false, message: "INI file not found" });
+      }
+
+      // Read the INI file content
+      const fileContent = fs.readFileSync(agentConfigPath, "utf-8");
+
+      // Match the 'AssetCode' key and extract its value
+      const match = fileContent.match(/AssetCode\s*=\s*(.*)/);
+      
+      if (match && match[1]) {
+          res.json({ success: true, kioskCode: match[1].trim() });
+      } else {
+          res.status(404).json({ success: false, message: "Kiosk code not found" });
+      }
+  } catch (error) {
+      console.error("Error reading the INI file:", error);
+      res.status(500).json({ success: false, message: "Error reading the INI file" });
+  }
+}
 const routes = [
   { path: "/", viewName: "login", title: "Login" },
   { path: "/index", viewName: "index", title: "Home" },
@@ -175,7 +231,9 @@ const routes = [
   { path: "/pageFour", viewName: "pageFour", title: "Page 4" },
   { path: "/sendMessage", method: "post", handler: sendMessageHandler },
   { path: "/login", method: "post", handler: loginHandler },
-  { path: "/change-password", method: "post", handler: changePasswordHandler }
+  { path: "/change-password", method: "post", handler: changePasswordHandler },
+  { path: "/update-both-configs", method: "post", handler: updateBothConfigsHandler },
+  { path: "/get-kiosk-code", method: "post", handler: getKioskCodeHandler }
 ];
 
 routes.forEach(({ path, viewName, title, method, handler }) => {

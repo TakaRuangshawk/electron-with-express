@@ -20,7 +20,7 @@
     }
     .reset-input{
       width: 80%;
-      font-size: 32px;
+      font-size: 24px;
       padding: 15px;
     }
     #statusMessage_reset {
@@ -47,7 +47,7 @@
       position: relative;
       display: inline-block;
       width: 50px;
-      left: 1740px;
+      left: 1100px;
     }
 
     .dropdown-content {
@@ -71,6 +71,20 @@
     .dropdown:hover .dropdown-content {display: block;}
 
     .dropdown:hover .dropbtn {background-color: #797a79;}
+    #responseBox {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+            text-align: left;
+            white-space: pre-wrap;
+            height: 220px;
+            overflow-y: auto;
+      }
+      .button-selftest{
+        font-size: 20px;
+      }
 </style>
 	<body>
 		<!-- <h1>
@@ -99,11 +113,15 @@
           </div>
         </div>
         <!-- <button id="changePasswordBtn">Change Password</button> -->
-        <button class ="button-19" id="fetchButton" style="position: absolute; top: 758px;left: 112px;background-color: white;border: 0;padding: 0;">
-            <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 100%; height: auto;    border-radius: 30px;">
+        <button class ="button-19" id="fetchButton" style="position: absolute; top: 485px;left: 90px;background-color: white;border: 0;padding: 0;">
+            <img id="fetchedImage" src="./pic/btn_printTotal.jpg" alt="Get Banknote& Print Total" style="width: 250px; height: auto;    border-radius: 30px;">
         </button>
-        
-       
+        <button class ="button-19" id="fetchButton3" style="position: absolute; top: 485px;left: 360px;background-color: white;border: 0;padding: 0;">
+          <img id="fetchedImage3" src="./pic/btn_sysConfig.png" alt="ChangeKioskCode" style="width: auto; height: 147px;    border-radius: 30px;">
+        </button>
+        <button class ="button-19" id="fetchButton4" style="position: absolute; top: 485px;left: 590px;background-color: white;border: 0;padding: 0;">
+          <img id="fetchedImage4" src="./pic/btn_sysDiagnose.png" alt="SelfTest" style="width: auto; height: 147px;    border-radius: 30px;">
+        </button>
         
         <!-- The Modal -->
         <div id="myModal" class="modal">
@@ -113,22 +131,22 @@
             <!-- <span class="close">&times;</span> -->
             <span class="close"></span>
             <div class="" id="statusPicture">
-               <img  src="./pic/home_ok.png" style="height: 100px;" /> 
+               <img  src="./pic/home_ok.png" style="height: 50px;" /> 
             </div>
             <p id="statusMessage"></p>
             <div class="" id="terminalCDM">
-              <img  src="./pic/icon_cdm.png" style="height: 650px;" /> 
+              <img  src="./pic/icon_cdm.png" style="height: 400px;" /> 
            </div>
            <div class="fade-in-out" id="statusPrint">
-            <img  src="./pic/icon_print.png" style="height: 150px;" /> 
+            <img  src="./pic/icon_print.png" style="height: 100px;" /> 
          </div>
          <div id="htmlContent"></div>
             <div id="tableContainer"></div>
-            <button class="button-19" id="fetchButton2" style="position: relative;left: 740px; top: 300px;background-color: white;border: 0;padding: 0;">
-              <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Clear Cassaste" style="width: 350px;height: auto;    border-radius: 30px;">
+            <button class="button-19" id="fetchButton2" style="position: relative;left: 400px; top: 120px;background-color: white;border: 0;padding: 0;">
+              <img id="fetchedImage" src="./pic/btn_replenishCash.jpg" alt="Clear Cassaste" style="width: 250px;height: auto;    border-radius: 30px;">
             </button>
-            <button class="button-19" id="exitmodal" style="position: relative;left: 760px; top: 300px;background-color: white;border: 0;padding: 0;">
-              <img id="fetchedImage" src="./pic/btn_exit.jpg" alt="Clear Cassaste" style="width: 350px;height: auto;    border-radius: 30px;">
+            <button class="button-19" id="exitmodal" style="position: relative;left: 464px; top: 120px;background-color: white;border: 0;padding: 0;">
+              <img id="fetchedImage" src="./pic/btn_exit.jpg" alt="Clear Cassaste" style="width: 250px;height: auto;    border-radius: 30px;">
             </button>
           </div>
         
@@ -136,8 +154,8 @@
         <!-- The Modal -->
         <div id="changePasswordModal" class="modal">
           <div class="modal-content">
-              <h1 style="text-align: center;">RESET PASSWORD : <%= username.toUpperCase() %> </h2>
-              <form id="changePasswordForm" style="height: 700px;display: flex;flex-wrap: wrap;flex-direction: column;align-content: center;align-items: center;justify-content: space-evenly;">
+              <h2 style="text-align: center;">RESET PASSWORD : <%= username.toUpperCase() %> </h2>
+              <form id="changePasswordForm" style="height: 450px;display: flex;flex-wrap: nowrap;flex-direction: column;align-content: center;align-items: center;justify-content: space-evenly;">
                   <!-- <label for="username">Username:</label> -->
                   <input  type="hidden" id="username" name="username" value="<%= username %>" readonly required>
                   <input class ="reset-input" type="password" id="oldPassword" name="oldPassword" required placeholder="OLD PASSWORD">
@@ -147,12 +165,53 @@
                   <input class ="reset-input" type="password" id="confirmPassword" name="confirmPassword" required placeholder="CONFIRM NEW PASSWORD">
                   <!-- Status Message -->
                   <div id="statusMessage_reset" style="margin-bottom: 20px;"></div>
-                  <div>
-                    <button type="submit" style="background: transparent;border: 0;cursor:pointer;"><img style="border-radius: 25px;" src="./pic/btn_ok.jpg" /></button>
-                    <button id="close-modal" style="background: transparent;border: 0;cursor:pointer;" type=""><img style="border-radius: 25px;" src="./pic/btn_exit.jpg" /></button>
+                  <div  style="bottom: 20px;position: relative;">
+                    <button type="submit" style="background: transparent;border: 0;cursor:pointer;"><img style="border-radius: 25px; width: 250px;" src="./pic/btn_ok.jpg" /></button>
+                    <button id="close-modal" style="background: transparent;border: 0;cursor:pointer;" type=""><img style="border-radius: 25px;width: 250px;" src="./pic/btn_exit.jpg" /></button>
                   </div>
                   
               </form>
+          </div>
+        </div>
+        <div id="selfTestModal" class="modal">
+          <div class="modal-content">
+            <h2 style="text-align: center;">System Diagnose</h2>
+              <p><strong>Current Kiosk Code: </strong><span id="kioskCodeDisplay">Fetching...</span></p>
+              <div class="button-container">
+                <button class="button-selftest" onclick="sendApiRequest('devinit')">Devinit</button>
+                <button class="button-selftest" onclick="sendApiRequest('checkcardbyteller')">Checkcardbyteller</button>
+                <button class="button-selftest" onclick="sendApiRequest('depositstatus-CashInStart')">CashInStart</button>
+                <button class="button-selftest" onclick="sendApiRequest('depositstatus-CashIn')">CashIn</button>
+                <button class="button-selftest" onclick="sendApiRequest('depositstatus-CashInRollbackNoCancel')">CashInRollbackNoCancel</button>
+                <button class="button-selftest" onclick="sendApiRequest('depositstatus-CashInRollback')">CashInRollback</button>
+                <button class="button-selftest" onclick="sendApiRequest('depositstatus-CashInEnd')">CashInEnd</button>
+            </div>
+            <div id="responseBox">API Response will appear here...</div>
+            <div  style="position: absolute;left: 500px;bottom: 200px;">
+              <button id="close-selftest-modal" style="background: transparent;border: 0;cursor:pointer;" type=""><img style="border-radius: 25px;width: 250px;" src="./pic/btn_exit.jpg" /></button>
+            </div>
+          </div>
+        </div>
+        <div id="changeKioskModal" class="modal">
+          <div class="modal-content">
+            <h2 style="text-align: center;">System Config</h2>
+            <form id="changeKioskForm" style="height: 450px;display: flex;flex-wrap: nowrap;flex-direction: column;align-content: center;align-items: center;justify-content: space-evenly;">
+              <div style="width: 80%;display: flex;justify-content: space-between;">
+                <p style="font-size: 24px; font-weight: 600;"> Current Kiosk Code </p>
+                <input style="width: 60%; font-size: 24px; font-weight: 600;" type="text" id="kiosk" name="kiosk" value="Test" readonly required>
+              </div>  
+              <br>
+              <div style="width: 80%;display: flex;justify-content: space-between;">
+                <p style="font-size: 24px; font-weight: 600;"> New Kiosk Code </p>
+              <input style="width: 60%; font-size: 24px; font-weight: 600;" class ="kiosk-input" type="text" id="newKiosk" name="newKiosk" required placeholder="NEW KIOSK CODE">
+              </div>
+              
+              <div  style="position: relative;">
+                <button type="submit" style="background: transparent;border: 0;cursor:pointer;"><img style="border-radius: 25px; width: 250px;" src="./pic/btn_ok.jpg" /></button>
+                <button id="close-kiosk-modal" style="background: transparent;border: 0;cursor:pointer;" type=""><img style="border-radius: 25px;width: 250px;" src="./pic/btn_exit.jpg" /></button>
+              </div>
+            </form>
+            
           </div>
         </div>
 	</body>
@@ -181,9 +240,30 @@
 
     // Call the function
     loadUsage('appsetting.json');
-
+    function fetchKioskCode() {
+            fetch("http://localhost:3000/get-kiosk-code", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    kioskCode = data.kioskCode;
+                    document.getElementById("kioskCodeDisplay").innerText = kioskCode;
+                } else {
+                    alert("Failed to fetch kiosk code from INI file.");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching kiosk code:", error);
+            });
+        }
       // Get the modal
       var modal = document.getElementById("myModal");
+      var kioskmodal = document.getElementById("changeKioskModal");
+      var selftestmodal = document.getElementById("selfTestModal"); 
       var span = document.getElementsByClassName("close")[0];
       const data_ab = {
             device_name: '-',
@@ -195,6 +275,37 @@
               { sum: '-', note_name: "100000", value: 100000, note: '-' }
             ]
           };
+      document.getElementById('fetchButton4').addEventListener('click', function() {
+        fetchKioskCode();
+        document.getElementById("responseBox").innerText = "Fetching...";
+        selftestmodal.style.display = "block";
+      });
+      document.getElementById('fetchButton3').addEventListener('click', function() {
+        kioskmodal.style.display = "block";
+        fetch("http://127.0.0.1:3000/get-kiosk-code", {
+            method: "POST",  // Using POST as requested
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                document.getElementById("kiosk").value = data.kioskCode;
+            } else {
+                alert("Failed to fetch the current kiosk code.");
+            }
+        })
+        .catch(error => {
+            alert("Error fetching kiosk code from server.");
+            console.error("Error:", error);
+        });
+      });
       document.getElementById('fetchButton').addEventListener('click', function() {
         
         modal.style.display = "block";
@@ -589,6 +700,8 @@
       var changePasswordBtn = document.getElementById("changePasswordBtn");
 
       var closeModalBtn = document.getElementById("close-modal");
+      var closeKioskModalBtn = document.getElementById("close-kiosk-modal");
+      var closeSelfTestModalBtn = document.getElementById("close-selftest-modal");
       var exitModalBtn = document.getElementById("exitmodal");
       // When the user clicks the button, open the modal 
       changePasswordBtn.onclick = function() {
@@ -600,13 +713,17 @@
           changePasswordModal.style.display = "block";
 
       }
+      closeSelfTestModalBtn.onclick = function() {
+        selftestmodal.style.display = "none";
+      }
       closeModalBtn.onclick = function() {
           changePasswordModal.style.display = "none";
-
+      }
+      closeKioskModalBtn.onclick = function() {
+          kioskmodal.style.display = "none";
       }
       exitModalBtn.onclick = function() {
           modal.style.display = "none";
-
       }
 
 
@@ -667,5 +784,141 @@
                   statusMessage_reset.classList.add('error');
               }
       });
+      // Submit the form using fetch and call the updateBothConfigsHandler
+document.getElementById("changeKioskForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const newValue = document.getElementById("newKiosk").value;
+
+    fetch("http://127.0.0.1:3000/update-both-configs", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ newValue: newValue })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert("Both INI files updated successfully!");
+            document.getElementById("changeKioskModal").style.display = "none";
+        } else {
+            alert("Failed to update the INI files.");
+        }
+    })
+    .catch(error => {
+        alert("Error submitting the kiosk code.");
+        console.error("Error:", error);
+    });
+});
+function sendApiRequest(action) {
+            const apiKey = "953fad28617cbe053e74b21c731469ad";
+            let apiUrl = "http://localhost:5001/lpk/api/v1/kiosk/";
+            let requestBody = {};
+
+            if (!kioskCode) {
+                alert("Kiosk Code not loaded. Please try again later.");
+                return;
+            }
+
+            // Prepare URL and Body for each API call using kioskCode
+            switch (action) {
+                case "devinit":
+                    apiUrl += "devinit";
+                    requestBody = { "kioskCode": kioskCode };
+                    break;
+
+                case "checkcardbyteller":
+                    apiUrl += "checkcardbyteller";
+                    requestBody = {
+                        "clientTranid": "3f601174-3917-09a2-5ad2-a123d1a8c2c6",
+                        "kioskCode": kioskCode
+                    };
+                    break;
+
+                case "depositstatus-CashInStart":
+                    apiUrl += "depositstatus";
+                    requestBody = {
+                        "kioskCode": kioskCode,
+                        "kioskRefId": "230911125200-1570001",
+                        "kisokMode": "CashInStart",
+                        "clientTranid": "3f601174-3917-09a2-5ad2-a123d1a8c2c6"
+                    };
+                    break;
+
+                case "depositstatus-CashIn":
+                    apiUrl += "depositstatus";
+                    requestBody = {
+                        "kioskCode": kioskCode,
+                        "kioskRefId": "230911125200-1570001",
+                        "kisokMode": "CashIn",
+                        "clientTranid": "3f601174-3917-09a2-5ad2-a123d1a8c2c6"
+                    };
+                    break;
+
+                case "depositstatus-CashInRollbackNoCancel":
+                    apiUrl += "depositstatus";
+                    requestBody = {
+                        "kioskCode": kioskCode,
+                        "kioskRefId": "230911125200-1570001",
+                        "kisokMode": "CashInRollbackNoCancel",
+                        "clientTranid": "3f601174-3917-09a2-5ad2-a123d1a8c2c6"
+                    };
+                    break;
+
+                case "depositstatus-CashInRollback":
+                    apiUrl += "depositstatus";
+                    requestBody = {
+                        "kioskCode": kioskCode,
+                        "kioskRefId": "230911125200-1570001",
+                        "kisokMode": "CashInRollback",
+                        "clientTranid": "3f601174-3917-09a2-5ad2-a123d1a8c2c6"
+                    };
+                    break;
+
+                case "depositstatus-CashInEnd":
+                    apiUrl += "depositstatus";
+                    requestBody = {
+                        "kioskCode": kioskCode,
+                        "kioskRefId": "230911125200-1570001",
+                        "kisokMode": "CashInEnd",
+                        "clientTranid": "3f601174-3917-09a2-5ad2-a123d1a8c2c6"
+                    };
+                    break;
+
+                default:
+                    alert("Invalid API action!");
+                    return;
+            }
+
+            // Send the request using fetch
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": apiKey
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("responseBox").innerText = 
+                    `Response from ${action}:\n${JSON.stringify(data, null, 2)}`;
+            })
+            .catch(error => {
+                document.getElementById("responseBox").innerText = 
+                    `Error: ${error.message}`;
+            });
+        }
     </script>
 	</html>

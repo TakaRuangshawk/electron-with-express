@@ -84,7 +84,7 @@ a {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-  height: 850px;
+  height: 500px;
   border: 10px white;
   border-radius: 35px;
 }
@@ -110,7 +110,7 @@ a {
 table th {
   background-color: #70ad47; /* Change this to your desired header color */
   color: white; /* Optional: Set text color for header */
-  font-size: 36px;
+  font-size: 24px;
   padding: 5px 50px;
   text-align: center;
 }
@@ -118,47 +118,47 @@ table th {
 /* Style for odd rows */
 table tr:nth-child(odd) {
   background-color: #d5e3cf; /* Change this to your desired color for odd rows */
-  font-size: 36px;
+  font-size: 24px;
   text-align: center;
 }
 
 /* Style for even rows */
 table tr:nth-child(even) {
   background-color: #ebf1e9; /* Change this to your desired color for even rows */
-  font-size: 36px;  
+  font-size: 24px;  
   text-align: center;
 }
-table{
+table {
   position: relative;
-  top: 150px;
-  left: 740px;
+  top: 50px;
+  left: 400px;
   border-collapse: collapse;
 }
 table tr{
   padding: 15px 50px;
 }
-#statusMessage{
-    font-size: 40px;
-    margin: 0;
-    position: relative;
-    top: 70px;
-    left: 930px;	
-    font-weight: bold;
+#statusMessage {
+  font-size: 32px;
+  margin: 0;
+  position: relative;
+  top: 33px;
+  left: 575px;
+  font-weight: bold;
 }
-#statusPicture{
+#statusPicture {
   position: absolute;
-  top: 159px;
-  left: 1000px;
+  top: 145px;
+  left: 640px;
 }
 #terminalCDM{
   position: absolute;
-    top: 220px;
-    left: 270px;
+    top: 160px;
+    left: 180px;
 }
-#statusPrint{
+#statusPrint {
   position: absolute;
-  top: 400px;
-  left: 550px;
+  top: 270px;
+  left: 350px;
 }
 .fade-in-out {
   animation: fadeInOut 2s ease-in-out infinite alternate;
